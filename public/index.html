@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ComissãoEstável | Nivelamento de Renda e Saúde Financeira para Comissionados</title>
+  <meta name="description" content="Transforme comissões instáveis em um salário previsível todo mês. Planejamento financeiro, salário sintético e colchão de sazonalidade para vendedores e autônomos.">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN com configuração personalizada -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Estilos e micro-interações adicionais */
+    body {
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #34d399;
+      cursor: pointer;
+      -webkit-appearance: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      border: 2px solid #ffffff;
+      transition: transform 0.1s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- ==================== HEADER FIXO ==================== -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 transition-all duration-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2.5 group">
+        <div class="w-9 h-9 rounded-xl bg-emerald-400 flex items-center justify-center text-emerald-950 shadow-sm group-hover:bg-emerald-500 transition-colors">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <span class="text-lg font-bold tracking-tight text-slate-900">
+          Comissão<span class="text-emerald-600">Estável</span>
+        </span>
+      </a>
+
+      <!-- Navegação -->
+      <nav class="flex items-center gap-5 sm:gap-6 text-sm font-medium text-slate-600">
+        <a href="#calculadora" class="hover:text-slate-900 transition-colors">Calculadora</a>
+        <a href="#artigos" class="hover:text-slate-900 transition-colors">Guia de Bolso</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="relative pt-12 pb-14 sm:pt-16 sm:pb-20 border-b border-slate-200/80 overflow-hidden bg-gradient-to-b from-white to-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="max-w-3xl mx-auto text-center">
+        
+        <!-- Tag Superior -->
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-900 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-6">
+          <svg class="w-4 h-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+          Inteligência financeira para quem vive de metas
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight mb-5">
+          Transforme comissões instáveis em um <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">salário previsível</span> todo mês.
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-8">
+          Elimine a ansiedade da montanha-russa de ganhos. Aplique o método do <strong>Salário Sintético</strong> e do <strong>Colchão de Sazonalidade</strong> para manter seu padrão de vida firme nos meses fracos sem gastar tudo nos meses recordes.
+        </p>
+
+        <!-- CTA Principal -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <a href="#calculadora" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-emerald-400 text-emerald-950 font-semibold text-base hover:bg-emerald-500 shadow-sm transition-all hover:shadow hover:-translate-y-0.5">
+            Simular Meu Nivelamento de Renda
+            <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </a>
+          <a href="#artigos" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white border border-slate-300 text-slate-700 font-medium text-base hover:bg-slate-50 transition-colors">
+            Ler Guia de Bolso
+          </a>
+        </div>
+
+        <!-- 3 Mini-Indicadores de Benefício -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-slate-200 text-left">
+          <div class="flex items-start gap-3 p-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-slate-900">Adeus às Planilhas</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Cálculos instantâneos de alocação em tempo real sem fórmulas complicadas.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 p-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-slate-900">Provisão de Impostos</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Separe o dinheiro da Receita e custos de venda antes de gastar qualquer real.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-3 p-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-sm font-semibold text-slate-900">Blindagem de 6 Meses</h2>
+              <p class="text-xs text-slate-500 mt-0.5">Descubra sua autonomia em meses fracos e o volume comercial de equilíbrio.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SEÇÃO PRINCIPAL: SUPER CALCULADORA ==================== -->
+  <main id="calculadora" class="py-12 sm:py-16 flex-1">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Cabeçalho da Seção -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Simulador Financeiro</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Super Calculadora de Nivelamento de Renda</h2>
+          <p class="text-sm text-slate-500 mt-1">Preencha seus parâmetros do mês. O cálculo e a estratégia de alocação são gerados instantaneamente.</p>
+        </div>
+
+        <!-- Ações Rápidas de Teste -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <button id="btnPresetRecord" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-300 text-xs font-medium text-slate-700 hover:text-emerald-800 transition-colors flex items-center gap-1.5 shadow-2xs">
+            <span>⚡</span> Mês Recorde (Alta)
+          </button>
+          <button id="btnPresetLow" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-amber-300 text-xs font-medium text-slate-700 hover:text-amber-800 transition-colors flex items-center gap-1.5 shadow-2xs">
+            <span>🌧️</span> Mês Fraco (Baixa)
+          </button>
+          <button id="btnReset" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-600 text-xs font-medium transition-colors" title="Restaurar valores padrão">
+            ↺ Limpar
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid 12 Colunas -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- ==================== COLUNA ESQUERDA: PARÂMETROS (5 COLS) ==================== -->
+        <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+          
+          <!-- Seletor de Estratégia de Alocação -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-xs font-semibold uppercase tracking-wider text-slate-600">Perfil de Distribuição</label>
+              <span id="strategyBadgeText" class="text-xs font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Equilibrado (Recomendado)</span>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
+              <button type="button" data-strategy="shield" class="strategy-btn py-2 px-1 text-center rounded-lg transition-all text-slate-600 hover:text-slate-900">
+                Blindagem
+              </button>
+              <button type="button" data-strategy="balanced" class="strategy-btn py-2 px-1 text-center rounded-lg transition-all bg-white text-emerald-950 shadow-xs border border-slate-200">
+                Equilibrado
+              </button>
+              <button type="button" data-strategy="wealth" class="strategy-btn py-2 px-1 text-center rounded-lg transition-all text-slate-600 hover:text-slate-900">
+                Patrimônio
+              </button>
+            </div>
+            <p id="strategyDesc" class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+              Equilibrado: 60% para Colchão de Sazonalidade, 15% para Lazer livre imediato e 25% para Construção de Patrimônio / 13º.
+            </p>
+          </div>
+
+          <!-- Campos Numéricos -->
+          <div class="space-y-4 pt-2 border-t border-slate-100">
+            
+            <!-- 1. Ganho Bruto do Mês Atual -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="inputGrossIncome" class="text-xs font-medium text-slate-700">
+                  Ganho Bruto do Mês Atual
+                </label>
+                <span class="text-[11px] text-slate-400">Fixo + Comissões recebidas</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
+                <input type="text" id="inputGrossIncome" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none" placeholder="0,00" value="18.500,00">
+              </div>
+            </div>
+
+            <!-- 2. Custo de Vida Essencial Fixo -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="inputEssentialCost" class="text-xs font-medium text-slate-700">
+                  Custo Essencial Fixo de Vida
+                </label>
+                <span class="text-[11px] text-slate-400">Aluguel, contas, comida mínima</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
+                <input type="text" id="inputEssentialCost" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-medium text-sm focus:outline-none" placeholder="0,00" value="4.200,00">
+              </div>
+            </div>
+
+            <!-- 3. Meta de Salário Estável -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="inputTargetSalary" class="text-xs font-medium text-slate-700">
+                  Meta de Salário Estável (Retirada Fixa)
+                </label>
+                <span class="text-[11px] text-slate-400">Seu padrão ideal sem exageros</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
+                <input type="text" id="inputTargetSalary" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none text-emerald-900" placeholder="0,00" value="7.500,00">
+              </div>
+            </div>
+
+            <!-- 4. Média em Meses Fracos -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="inputLowMonth" class="text-xs font-medium text-slate-700">
+                  Média Líquida nos Meses Fracos
+                </label>
+                <span class="text-[11px] text-slate-400">Pior cenário ("Vacas Magras")</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
+                <input type="text" id="inputLowMonth" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-medium text-sm focus:outline-none" placeholder="0,00" value="3.000,00">
+              </div>
+            </div>
+
+            <!-- 5. Saldo Atual no Colchão -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="inputCurrentBuffer" class="text-xs font-medium text-slate-700">
+                  Saldo Atual Guardado no Colchão
+                </label>
+                <span class="text-[11px] text-slate-400">Reserva de liquidez diária hoje</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
+                <input type="text" id="inputCurrentBuffer" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none" placeholder="0,00" value="15.000,00">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Sliders de Percentual -->
+          <div class="space-y-4 pt-3 border-t border-slate-100">
+            
+            <!-- Slider 1: Impostos e Custos Operacionais -->
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-medium text-slate-700">Impostos & Custos de Venda (Simples/Giro)</span>
+                <span id="taxRateLabel" class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded text-[11px]">6%</span>
+              </div>
+              <input type="range" id="sliderTaxRate" min="0" max="35" step="0.5" value="6" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                <span>0% (PF Isento)</span>
+                <span>6% (Simples)</span>
+                <span>15% (Lucro Presumido)</span>
+                <span>35%</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: Percentual Médio de Comissão sobre Vendas -->
+            <div>
+              <div class="flex items-center justify-between text-xs mb-1">
+                <span class="font-medium text-slate-700">Comissão Média sobre Volume de Vendas</span>
+                <span id="commissionRateLabel" class="font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">5.0%</span>
+              </div>
+              <input type="range" id="sliderCommissionRate" min="0.5" max="30" step="0.5" value="5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                <span>0.5% (Automotivo/Grosso)</span>
+                <span>5% (Imóveis/B2B)</span>
+                <span>15% (Serviços)</span>
+                <span>30%</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ==================== COLUNA DIREITA: DIAGNÓSTICO EM TEMPO REAL (7 COLS) ==================== -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Banner de Status do Mês (Dinâmico) -->
+          <div id="statusBanner" class="p-5 rounded-2xl border transition-all duration-300 bg-emerald-50 border-emerald-200 text-emerald-950">
+            <div class="flex items-start gap-3.5">
+              <div id="statusIconContainer" class="w-10 h-10 rounded-xl bg-emerald-400 text-emerald-950 flex items-center justify-center shrink-0 shadow-xs">
+                <svg id="statusIcon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                  <h3 id="statusTitle" class="text-base font-bold text-slate-900">
+                    Mês de Alta: Excedente Gerado
+                  </h3>
+                  <span id="statusBadge" class="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900">
+                    Saldo Positivo
+                  </span>
+                </div>
+                <p id="statusDescText" class="text-xs text-slate-600 mt-1 leading-relaxed">
+                  Sua renda líquida superou o Salário Estável. O excedente foi particionado para blindar seu futuro, garantir lazer sem culpa e acelerar seu patrimônio.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards Principais (Grid 2x2) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Card 1: Salário Estável Garantido -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">1. Retirada Pessoal</span>
+                <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs">
+                  🏠
+                </span>
+              </div>
+              <div class="text-[11px] text-slate-500">Salário Estável para Conta PF</div>
+              <div id="cardGuaranteedSalary" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+                R$ 7.500,00
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">
+                Transferência fixa programada para custear a vida do mês.
+              </p>
+            </div>
+
+            <!-- Card 2: Provisão de Impostos e Custos -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">2. Provisão Fiscal</span>
+                <span class="w-6 h-6 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
+                  🧾
+                </span>
+              </div>
+              <div class="text-[11px] text-slate-500">Impostos & Despesas de Venda</div>
+              <div id="cardTaxProvision" class="text-xl sm:text-2xl font-extrabold text-slate-700 mt-1">
+                R$ 1.110,00
+              </div>
+              <p class="text-[11px] text-slate-400 mt-2">
+                Separar imediatamente na conta PJ/Reserva fiscal.
+              </p>
+            </div>
+
+            <!-- Card 3: Aporte ou Resgate do Colchão -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-2">
+                <span id="cardBufferActionBadge" class="text-xs font-semibold uppercase tracking-wider text-emerald-700">3. Aporte no Colchão</span>
+                <span id="cardBufferActionIcon" class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs">
+                  🛡️
+                </span>
+              </div>
+              <div id="cardBufferActionSub" class="text-[11px] text-slate-500">Blindagem de Sazonalidade</div>
+              <div id="cardBufferValue" class="text-xl sm:text-2xl font-extrabold text-emerald-800 mt-1">
+                +R$ 5.934,00
+              </div>
+              <p id="cardBufferNote" class="text-[11px] text-slate-400 mt-2">
+                Destinado para sustentar os meses fracos futuros.
+              </p>
+            </div>
+
+            <!-- Card 4: Lazer Sem Culpa + Patrimônio -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">4. Excedente Livre</span>
+                <span class="w-6 h-6 rounded-md bg-teal-50 text-teal-700 flex items-center justify-center text-xs">
+                  🎉
+                </span>
+              </div>
+              <div class="text-[11px] text-slate-500">Lazer Imediato + Patrimônio</div>
+              <div id="cardFreeBonus" class="text-xl sm:text-2xl font-extrabold text-teal-800 mt-1">
+                R$ 3.956,00
+              </div>
+              <div class="flex justify-between text-[11px] text-slate-500 mt-2 pt-1.5 border-t border-slate-100">
+                <span>Lazer: <strong id="subRewardValue" class="text-slate-700">R$ 1.483,50</strong></span>
+                <span>Futuro/13º: <strong id="subWealthValue" class="text-slate-700">R$ 2.472,50</strong></span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Barra de Alocação Visual (100% Empilhada) -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Destino de Cada Centavo da Renda Bruta</h4>
+              <span id="totalIncomeHeader" class="text-xs font-semibold text-slate-900">Total: R$ 18.500,00</span>
+            </div>
+
+            <!-- Barra Segmentada -->
+            <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
+              <div id="barTax" class="h-full bg-slate-400 transition-all duration-300" style="width: 6%" title="Impostos"></div>
+              <div id="barSalary" class="h-full bg-emerald-500 transition-all duration-300" style="width: 40.5%" title="Salário Estável"></div>
+              <div id="barBuffer" class="h-full bg-emerald-300 transition-all duration-300" style="width: 32%" title="Colchão"></div>
+              <div id="barReward" class="h-full bg-teal-300 transition-all duration-300" style="width: 8%" title="Lazer Livre"></div>
+              <div id="barWealth" class="h-full bg-cyan-400 transition-all duration-300" style="width: 13.5%" title="Patrimônio"></div>
+            </div>
+
+            <!-- Legenda Colorida -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] text-slate-600 pt-1">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-slate-400 shrink-0"></span>
+                <span>Impostos: <strong id="legendTaxPct">6%</strong></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
+                <span>Salário: <strong id="legendSalaryPct">40.5%</strong></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-300 shrink-0"></span>
+                <span>Colchão: <strong id="legendBufferPct">32%</strong></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-teal-300 shrink-0"></span>
+                <span>Lazer: <strong id="legendRewardPct">8%</strong></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0"></span>
+                <span>Patrimônio: <strong id="legendWealthPct">13.5%</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloco Termômetro de Blindagem & Sobrevivência -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div>
+                  <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Termômetro de Blindagem do Colchão</h4>
+                  <p class="text-[11px] text-slate-400">Meta: 6 meses de cobertura do déficit em período de vacas magras</p>
+                </div>
+                <div class="text-right">
+                  <span id="bufferGoalProgressText" class="text-sm font-extrabold text-emerald-800">77%</span>
+                  <div id="bufferGoalComparison" class="text-[10px] text-slate-400">R$ 20.934 / R$ 27.000</div>
+                </div>
+              </div>
+
+              <!-- Barra de Progresso do Colchão -->
+              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
+                <div id="shieldProgressBar" class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width: 77%"></div>
+              </div>
+            </div>
+
+            <!-- 3 Pílulas de Métricas de Autonomia -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
+              
+              <!-- Pílula 1: Meses Fracos -->
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[10px] uppercase font-semibold text-slate-500 block">Autonomia em Baixa</span>
+                <div class="text-base font-extrabold text-slate-900 mt-0.5">
+                  Aguenta <span id="metricMonthsLow" class="text-emerald-700">4.6</span> meses
+                </div>
+                <span class="text-[10px] text-slate-400 block mt-0.5">de vendas fracas com salário integral</span>
+              </div>
+
+              <!-- Pílula 2: Venda Zero -->
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[10px] uppercase font-semibold text-slate-500 block">Sobrevivência Extrema</span>
+                <div class="text-base font-extrabold text-slate-900 mt-0.5">
+                  Sobrevive <span id="metricMonthsZero" class="text-slate-800">5.0</span> meses
+                </div>
+                <span class="text-[10px] text-slate-400 block mt-0.5">com faturamento zero pagando essencial</span>
+              </div>
+
+              <!-- Pílula 3: Meta Comercial -->
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[10px] uppercase font-semibold text-slate-500 block">Meta Comercial do Mês</span>
+                <div class="text-base font-extrabold text-emerald-800 mt-0.5">
+                  <span id="metricSalesVolume">R$ 159.574</span>
+                </div>
+                <span class="text-[10px] text-slate-400 block mt-0.5">em vendas para bancar seu salário estável</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Botão de Exportação para WhatsApp -->
+          <div>
+            <button id="btnExportWhatsApp" type="button" class="w-full py-3.5 px-4 rounded-xl bg-white border border-slate-300 hover:border-emerald-400 text-slate-800 font-semibold text-sm shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 group">
+              <svg class="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.303-.058.116-.087.188-.173.289l-.26.303c-.087.087-.177.181-.076.355.101.173.449.741.964 1.2.662.591 1.221.774 1.394.86.173.087.275.072.376-.043.101-.116.433-.506.549-.679.116-.173.231-.144.39-.087s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824zM12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.981-1.396A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.167c-1.63 0-3.149-.49-4.417-1.332l-.317-.21-2.965.83.844-2.89-.228-.337A8.136 8.136 0 013.833 12c0-4.503 3.664-8.167 8.167-8.167 4.503 0 8.167 3.664 8.167 8.167 0 4.503-3.664 8.167-8.167 8.167z"/>
+              </svg>
+              <span id="btnExportText">Copiar Plano do Mês para WhatsApp</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ==================== SEÇÃO: GUIA DE BOLSO DO COMISSIONADO ==================== -->
+  <section id="artigos" class="py-14 sm:py-20 border-t border-slate-200 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="max-w-3xl mb-12">
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Educação e Mentalidade</span>
+        <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">Guia de Bolso do Comissionado</h2>
+        <p class="text-sm text-slate-500 mt-1">Orientações táticas e comportamentais para blindar sua vida financeira contra a montanha-russa do mercado.</p>
+      </div>
+
+      <!-- Grid dos 4 Artigos -->
+      <div id="articlesGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Renderizado dinamicamente via app.js -->
+        <div class="p-8 text-center text-slate-400 col-span-2">
+          Carregando artigos educativos...
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== MODAL DE LEITURA DO ARTIGO ==================== -->
+  <div id="articleModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <!-- Backdrop Blur -->
+    <div id="modalBackdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"></div>
+    
+    <div class="min-h-full flex items-center justify-center p-4 sm:p-6 text-center">
+      <div class="relative w-full max-w-2xl bg-white rounded-2xl text-left shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-8">
+        
+        <!-- Modal Header -->
+        <div class="px-6 py-5 border-b border-slate-100 flex items-start justify-between gap-4 bg-slate-50/60">
+          <div>
+            <div class="flex items-center gap-2 mb-1.5">
+              <span id="modalCategory" class="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                Categoria
+              </span>
+              <span id="modalReadTime" class="text-[11px] text-slate-400">
+                4 min de leitura
+              </span>
+            </div>
+            <h3 id="modalTitle" class="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+              Título do Artigo
+            </h3>
+          </div>
+          
+          <button id="modalCloseBtn" type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors shrink-0" aria-label="Fechar modal">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Body com Scroll -->
+        <div id="modalContent" class="px-6 py-6 max-h-[70vh] overflow-y-auto custom-scroll text-slate-600 text-sm leading-relaxed space-y-5">
+          <!-- Conteúdo gerado dinamicamente -->
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+          <span class="text-xs text-slate-400">ComissãoEstável • Conhecimento Aplicado</span>
+          <button id="modalFooterCloseBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition-colors">
+            Entendi, fechar artigo
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-slate-200 py-8 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="w-6 h-6 rounded-lg bg-emerald-400 flex items-center justify-center text-emerald-950 font-bold text-xs">
+          C
+        </div>
+        <span class="font-semibold text-slate-700">ComissãoEstável</span>
+        <span class="text-slate-300">•</span>
+        <span>Saúde Financeira para Profissionais Comissionados</span>
+        <span class="text-slate-300">•</span>
+        <span class="px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium">Projeto Integrador • Versão 1.0 • Grupo C</span>
+      </div>
+
+      <p class="text-center sm:text-right text-slate-400">
+        Ferramenta educativa e de planejamento. Seus dados são processados e armazenados 100% no seu navegador.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Script da Aplicação -->
+  <script src="/app.js"></script>
+</body>
+</html>
