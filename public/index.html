@@ -244,7 +244,7 @@
               </div>
               <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
-                <input type="text" id="inputGrossIncome" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none" placeholder="0,00" value="18.500,00">
+                <input type="text" id="inputGrossIncome" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none placeholder:text-slate-400 placeholder:font-normal" placeholder="Digite o ganho bruto deste mês (Ex: 18.500,00)" value="">
               </div>
             </div>
 
@@ -258,7 +258,7 @@
               </div>
               <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
-                <input type="text" id="inputEssentialCost" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-medium text-sm focus:outline-none" placeholder="0,00" value="4.200,00">
+                <input type="text" id="inputEssentialCost" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-medium text-sm focus:outline-none placeholder:text-slate-400 placeholder:font-normal" placeholder="Digite seu custo fixo de sobrevivência (Ex: 4.200,00)" value="">
               </div>
             </div>
 
@@ -272,7 +272,7 @@
               </div>
               <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
-                <input type="text" id="inputTargetSalary" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none text-emerald-900" placeholder="0,00" value="7.500,00">
+                <input type="text" id="inputTargetSalary" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none text-emerald-900 placeholder:text-slate-400 placeholder:font-normal" placeholder="Digite seu salário mensal desejado (Ex: 7.500,00)" value="">
               </div>
             </div>
 
@@ -286,7 +286,7 @@
               </div>
               <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
-                <input type="text" id="inputLowMonth" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-medium text-sm focus:outline-none" placeholder="0,00" value="3.000,00">
+                <input type="text" id="inputLowMonth" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-medium text-sm focus:outline-none placeholder:text-slate-400 placeholder:font-normal" placeholder="Média de ganho no pior mês (Ex: 3.000,00)" value="">
               </div>
             </div>
 
@@ -300,7 +300,7 @@
               </div>
               <div class="relative rounded-xl border border-slate-200 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm font-medium">R$</span>
-                <input type="text" id="inputCurrentBuffer" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none" placeholder="0,00" value="15.000,00">
+                <input type="text" id="inputCurrentBuffer" inputmode="numeric" class="w-full pl-10 pr-3.5 py-2.5 bg-transparent rounded-xl text-slate-900 font-semibold text-sm focus:outline-none placeholder:text-slate-400 placeholder:font-normal" placeholder="Quanto já tem guardado hoje? (Ex: 15.000,00)" value="">
               </div>
             </div>
 
@@ -347,24 +347,24 @@
         <div class="lg:col-span-7 space-y-6">
           
           <!-- Banner de Status do Mês (Dinâmico) -->
-          <div id="statusBanner" class="p-5 rounded-2xl border transition-all duration-300 bg-emerald-50 border-emerald-200 text-emerald-950">
+          <div id="statusBanner" class="p-5 rounded-2xl border transition-all duration-300 bg-slate-100/90 border-slate-200 text-slate-800">
             <div class="flex items-start gap-3.5">
-              <div id="statusIconContainer" class="w-10 h-10 rounded-xl bg-emerald-400 text-emerald-950 flex items-center justify-center shrink-0 shadow-xs">
-                <svg id="statusIcon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              <div id="statusIconContainer" class="w-10 h-10 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 shadow-xs">
+                <svg id="statusIcon" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </div>
               <div class="flex-1">
                 <div class="flex items-center justify-between flex-wrap gap-2">
                   <h3 id="statusTitle" class="text-base font-bold text-slate-900">
-                    Mês de Alta: Excedente Gerado
+                    Aguardando Informações do Mês
                   </h3>
-                  <span id="statusBadge" class="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900">
-                    Saldo Positivo
+                  <span id="statusBadge" class="text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700">
+                    Aguardando Entradas
                   </span>
                 </div>
                 <p id="statusDescText" class="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Sua renda líquida superou o Salário Estável. O excedente foi particionado para blindar seu futuro, garantir lazer sem culpa e acelerar seu patrimônio.
+                  Preencha seus valores nos campos ao lado (ou selecione "Mês Recorde" / "Mês Fraco" acima) para gerar o diagnóstico de saúde financeira e a divisão inteligente da sua renda.
                 </p>
               </div>
             </div>
@@ -382,8 +382,8 @@
                 </span>
               </div>
               <div class="text-[11px] text-slate-500">Salário Estável para Conta PF</div>
-              <div id="cardGuaranteedSalary" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
-                R$ 7.500,00
+              <div id="cardGuaranteedSalary" class="text-xl sm:text-2xl font-extrabold text-slate-400 mt-1">
+                R$ --
               </div>
               <p class="text-[11px] text-slate-400 mt-2">
                 Transferência fixa programada para custear a vida do mês.
@@ -399,8 +399,8 @@
                 </span>
               </div>
               <div class="text-[11px] text-slate-500">Impostos & Despesas de Venda</div>
-              <div id="cardTaxProvision" class="text-xl sm:text-2xl font-extrabold text-slate-700 mt-1">
-                R$ 1.110,00
+              <div id="cardTaxProvision" class="text-xl sm:text-2xl font-extrabold text-slate-400 mt-1">
+                R$ --
               </div>
               <p class="text-[11px] text-slate-400 mt-2">
                 Separar imediatamente na conta PJ/Reserva fiscal.
@@ -410,17 +410,17 @@
             <!-- Card 3: Aporte ou Resgate do Colchão -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
               <div class="flex items-center justify-between mb-2">
-                <span id="cardBufferActionBadge" class="text-xs font-semibold uppercase tracking-wider text-emerald-700">3. Aporte no Colchão</span>
-                <span id="cardBufferActionIcon" class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs">
+                <span id="cardBufferActionBadge" class="text-xs font-semibold uppercase tracking-wider text-slate-400">3. Colchão de Sazonalidade</span>
+                <span id="cardBufferActionIcon" class="w-6 h-6 rounded-md bg-slate-100 text-slate-400 flex items-center justify-center text-xs">
                   🛡️
                 </span>
               </div>
-              <div id="cardBufferActionSub" class="text-[11px] text-slate-500">Blindagem de Sazonalidade</div>
-              <div id="cardBufferValue" class="text-xl sm:text-2xl font-extrabold text-emerald-800 mt-1">
-                +R$ 5.934,00
+              <div id="cardBufferActionSub" class="text-[11px] text-slate-500">Aguardando valores</div>
+              <div id="cardBufferValue" class="text-xl sm:text-2xl font-extrabold text-slate-400 mt-1">
+                R$ --
               </div>
               <p id="cardBufferNote" class="text-[11px] text-slate-400 mt-2">
-                Destinado para sustentar os meses fracos futuros.
+                Aporte ou resgate calculado após preencher a renda.
               </p>
             </div>
 
@@ -433,12 +433,12 @@
                 </span>
               </div>
               <div class="text-[11px] text-slate-500">Lazer Imediato + Patrimônio</div>
-              <div id="cardFreeBonus" class="text-xl sm:text-2xl font-extrabold text-teal-800 mt-1">
-                R$ 3.956,00
+              <div id="cardFreeBonus" class="text-xl sm:text-2xl font-extrabold text-slate-400 mt-1">
+                R$ --
               </div>
-              <div class="flex justify-between text-[11px] text-slate-500 mt-2 pt-1.5 border-t border-slate-100">
-                <span>Lazer: <strong id="subRewardValue" class="text-slate-700">R$ 1.483,50</strong></span>
-                <span>Futuro/13º: <strong id="subWealthValue" class="text-slate-700">R$ 2.472,50</strong></span>
+              <div class="flex justify-between text-[11px] text-slate-400 mt-2 pt-1.5 border-t border-slate-100">
+                <span>Lazer: <strong id="subRewardValue" class="text-slate-500">R$ --</strong></span>
+                <span>Futuro/13º: <strong id="subWealthValue" class="text-slate-500">R$ --</strong></span>
               </div>
             </div>
 
@@ -448,39 +448,39 @@
           <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
             <div class="flex items-center justify-between">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Destino de Cada Centavo da Renda Bruta</h4>
-              <span id="totalIncomeHeader" class="text-xs font-semibold text-slate-900">Total: R$ 18.500,00</span>
+              <span id="totalIncomeHeader" class="text-xs font-semibold text-slate-500">Total: R$ -- (Aguardando dados)</span>
             </div>
 
             <!-- Barra Segmentada -->
             <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
-              <div id="barTax" class="h-full bg-slate-400 transition-all duration-300" style="width: 6%" title="Impostos"></div>
-              <div id="barSalary" class="h-full bg-emerald-500 transition-all duration-300" style="width: 40.5%" title="Salário Estável"></div>
-              <div id="barBuffer" class="h-full bg-emerald-300 transition-all duration-300" style="width: 32%" title="Colchão"></div>
-              <div id="barReward" class="h-full bg-teal-300 transition-all duration-300" style="width: 8%" title="Lazer Livre"></div>
-              <div id="barWealth" class="h-full bg-cyan-400 transition-all duration-300" style="width: 13.5%" title="Patrimônio"></div>
+              <div id="barTax" class="h-full bg-slate-400 transition-all duration-300" style="width: 0%" title="Impostos"></div>
+              <div id="barSalary" class="h-full bg-emerald-500 transition-all duration-300" style="width: 0%" title="Salário Estável"></div>
+              <div id="barBuffer" class="h-full bg-emerald-300 transition-all duration-300" style="width: 0%" title="Colchão"></div>
+              <div id="barReward" class="h-full bg-teal-300 transition-all duration-300" style="width: 0%" title="Lazer Livre"></div>
+              <div id="barWealth" class="h-full bg-cyan-400 transition-all duration-300" style="width: 0%" title="Patrimônio"></div>
             </div>
 
             <!-- Legenda Colorida -->
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[11px] text-slate-600 pt-1">
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-slate-400 shrink-0"></span>
-                <span>Impostos: <strong id="legendTaxPct">6%</strong></span>
+                <span>Impostos: <strong id="legendTaxPct">0%</strong></span>
               </div>
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
-                <span>Salário: <strong id="legendSalaryPct">40.5%</strong></span>
+                <span>Salário: <strong id="legendSalaryPct">0%</strong></span>
               </div>
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-300 shrink-0"></span>
-                <span>Colchão: <strong id="legendBufferPct">32%</strong></span>
+                <span>Colchão: <strong id="legendBufferPct">0%</strong></span>
               </div>
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-teal-300 shrink-0"></span>
-                <span>Lazer: <strong id="legendRewardPct">8%</strong></span>
+                <span>Lazer: <strong id="legendRewardPct">0%</strong></span>
               </div>
               <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shrink-0"></span>
-                <span>Patrimônio: <strong id="legendWealthPct">13.5%</strong></span>
+                <span>Patrimônio: <strong id="legendWealthPct">0%</strong></span>
               </div>
             </div>
           </div>
@@ -494,14 +494,14 @@
                   <p class="text-[11px] text-slate-400">Meta: 6 meses de cobertura do déficit em período de vacas magras</p>
                 </div>
                 <div class="text-right">
-                  <span id="bufferGoalProgressText" class="text-sm font-extrabold text-emerald-800">77%</span>
-                  <div id="bufferGoalComparison" class="text-[10px] text-slate-400">R$ 20.934 / R$ 27.000</div>
+                  <span id="bufferGoalProgressText" class="text-sm font-extrabold text-slate-400">0%</span>
+                  <div id="bufferGoalComparison" class="text-[10px] text-slate-400">R$ 0,00 / R$ 0,00</div>
                 </div>
               </div>
 
               <!-- Barra de Progresso do Colchão -->
               <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
-                <div id="shieldProgressBar" class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width: 77%"></div>
+                <div id="shieldProgressBar" class="h-full bg-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
             </div>
 
@@ -512,7 +512,7 @@
               <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
                 <span class="text-[10px] uppercase font-semibold text-slate-500 block">Autonomia em Baixa</span>
                 <div class="text-base font-extrabold text-slate-900 mt-0.5">
-                  Aguenta <span id="metricMonthsLow" class="text-emerald-700">4.6</span> meses
+                  Aguenta <span id="metricMonthsLow" class="text-slate-500">--</span> meses
                 </div>
                 <span class="text-[10px] text-slate-400 block mt-0.5">de vendas fracas com salário integral</span>
               </div>
@@ -521,7 +521,7 @@
               <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
                 <span class="text-[10px] uppercase font-semibold text-slate-500 block">Sobrevivência Extrema</span>
                 <div class="text-base font-extrabold text-slate-900 mt-0.5">
-                  Sobrevive <span id="metricMonthsZero" class="text-slate-800">5.0</span> meses
+                  Sobrevive <span id="metricMonthsZero" class="text-slate-500">--</span> meses
                 </div>
                 <span class="text-[10px] text-slate-400 block mt-0.5">com faturamento zero pagando essencial</span>
               </div>
@@ -529,8 +529,8 @@
               <!-- Pílula 3: Meta Comercial -->
               <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
                 <span class="text-[10px] uppercase font-semibold text-slate-500 block">Meta Comercial do Mês</span>
-                <div class="text-base font-extrabold text-emerald-800 mt-0.5">
-                  <span id="metricSalesVolume">R$ 159.574</span>
+                <div class="text-base font-extrabold text-slate-600 mt-0.5">
+                  <span id="metricSalesVolume">R$ --</span>
                 </div>
                 <span class="text-[10px] text-slate-400 block mt-0.5">em vendas para bancar seu salário estável</span>
               </div>
