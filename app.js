@@ -7,14 +7,14 @@
   'use strict';
 
   // ==================== ESTADO DA APLICAÇÃO ====================
-  const STORAGE_KEY = 'comissao_estavel_state_v1';
+  const STORAGE_KEY = 'comissao_estavel_state_v2';
 
   const defaultState = {
-    grossIncome: 18500,
-    essentialCost: 4200,
-    targetSalary: 7500,
-    lowMonthAverage: 3000,
-    currentBuffer: 15000,
+    grossIncome: 0,
+    essentialCost: 0,
+    targetSalary: 0,
+    lowMonthAverage: 0,
+    currentBuffer: 0,
     taxAndCostRate: 6,
     commissionRate: 5,
     strategyProfile: 'balanced' // 'shield' | 'balanced' | 'wealth'
@@ -52,9 +52,11 @@
 
   /**
    * Formata número para string de input amigável (ex: 18500 -> "18.500,00")
+   * Se for zero ou vazio, retorna string vazia para exibir o placeholder explicativo
    */
   const formatForInput = (num) => {
-    const val = Number(num) || 0;
+    const val = Number(num);
+    if (!val || val === 0) return '';
     return val.toLocaleString('pt-BR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
@@ -230,6 +232,14 @@
       syncStateFromInputs();
       saveStateToStorage();
 
+      // Se ainda não foram preenchidos valores chave, exibe o estado de espera elegante
+      const hasInputs = state.grossIncome > 0 || state.targetSalary > 0 || state.essentialCost > 0;
+      if (!hasInputs) {
+        currentCalculationData = null;
+        renderAwaitingState();
+        return;
+      }
+
       const response = await fetch('/api/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -257,9 +267,73 @@
     }, 150);
   };
 
+  // ==================== ESTADO DE ESPERA (SEM INPUTS) ====================
+  const renderAwaitingState = () => {
+    // 1. Banner de Status (Neutro - Aguardando)
+    dom.statusBanner.className =
+      'p-5 rounded-2xl border transition-all duration-300 bg-slate-100/90 border-slate-200 text-slate-800';
+    dom.statusIconContainer.className =
+      'w-10 h-10 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 shadow-xs';
+    dom.statusBadge.className =
+      'text-[11px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700';
+    dom.statusBadge.textContent = 'Aguardando Entradas';
+    dom.statusIcon.innerHTML =
+      '<path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />';
+    dom.statusTitle.textContent = 'Aguardando Informações do Mês';
+    dom.statusDescText.textContent =
+      'Preencha seus valores nos campos ao lado (ou selecione "Mês Recorde" / "Mês Fraco" acima) para gerar o diagnóstico de saúde financeira e a divisão inteligente da sua renda.';
+
+    // 2. Cards Principais
+    dom.cardGuaranteedSalary.textContent = 'R$ --';
+    dom.cardTaxProvision.textContent = 'R$ --';
+
+    dom.cardBufferActionBadge.textContent = '3. Colchão de Sazonalidade';
+    dom.cardBufferActionBadge.className = 'text-xs font-semibold uppercase tracking-wider text-slate-400';
+    dom.cardBufferActionIcon.className =
+      'w-6 h-6 rounded-md bg-slate-100 text-slate-400 flex items-center justify-center text-xs';
+    dom.cardBufferActionIcon.textContent = '🛡️';
+    dom.cardBufferActionSub.textContent = 'Aguardando valores';
+    dom.cardBufferValue.className = 'text-xl sm:text-2xl font-extrabold text-slate-400 mt-1';
+    dom.cardBufferValue.textContent = 'R$ --';
+    dom.cardBufferNote.textContent = 'Aporte ou resgate calculado após preencher a renda.';
+
+    dom.cardFreeBonus.textContent = 'R$ --';
+    dom.subRewardValue.textContent = 'R$ --';
+    dom.subWealthValue.textContent = 'R$ --';
+
+    // 3. Barra de Alocação Visual
+    dom.totalIncomeHeader.textContent = 'Total: R$ -- (Aguardando dados)';
+    dom.barTax.style.width = '0%';
+    dom.barSalary.style.width = '0%';
+    dom.barBuffer.style.width = '0%';
+    dom.barReward.style.width = '0%';
+    dom.barWealth.style.width = '0%';
+    dom.legendTaxPct.textContent = '0%';
+    dom.legendSalaryPct.textContent = '0%';
+    dom.legendBufferPct.textContent = '0%';
+    dom.legendRewardPct.textContent = '0%';
+    dom.legendWealthPct.textContent = '0%';
+
+    // 4. Termômetro
+    dom.shieldProgressBar.style.width = '0%';
+    dom.bufferGoalProgressText.textContent = '0%';
+    dom.bufferGoalComparison.textContent = 'R$ 0,00 / R$ 0,00';
+    dom.metricMonthsLow.textContent = '--';
+    dom.metricMonthsZero.textContent = '--';
+    dom.metricSalesVolume.textContent = 'R$ --';
+
+    // 5. Botão WhatsApp
+    dom.btnExportText.textContent = 'Preencha os dados para exportar';
+    dom.btnExportWhatsApp.classList.add('opacity-70', 'cursor-not-allowed');
+  };
+
   // ==================== ATUALIZAÇÃO DO DASHBOARD ====================
   const renderDashboard = (data) => {
     const { financials, status, allocationBreakdown } = data;
+
+    // Habilita botão de exportar WhatsApp
+    dom.btnExportText.textContent = 'Copiar Plano do Mês para WhatsApp';
+    dom.btnExportWhatsApp.classList.remove('opacity-70', 'cursor-not-allowed');
 
     // 1. Atualização do Banner de Status
     if (status.code === 'surplus') {
@@ -369,7 +443,10 @@
 
   // ==================== EXPORTAÇÃO PARA WHATSAPP ====================
   const exportToWhatsApp = async () => {
-    if (!currentCalculationData) return;
+    if (!currentCalculationData || state.grossIncome <= 0) {
+      alert('Por favor, preencha os valores da calculadora antes de exportar o plano para o WhatsApp.');
+      return;
+    }
 
     const { financials, inputs, status } = currentCalculationData;
 
@@ -628,10 +705,13 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
     });
 
     dom.btnReset.addEventListener('click', () => {
-      if (confirm('Deseja restaurar os parâmetros padrão da calculadora?')) {
+      if (confirm('Deseja limpar todos os campos da calculadora?')) {
         state = { ...defaultState };
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
         syncInputsFromState();
-        calculateFinancials();
+        renderAwaitingState();
       }
     });
 
