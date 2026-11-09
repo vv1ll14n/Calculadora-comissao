@@ -655,6 +655,9 @@
     };
   };
 
+  const isStaticHost =
+    window.location.protocol === 'file:' || window.location.hostname.endsWith('github.io');
+
   // ==================== INTEGRAÇÃO COM BACKEND (API /api/calculate) ====================
   const calculateFinancials = async () => {
     updateStepContextPreviews();
@@ -665,6 +668,13 @@
     if (!hasInputs) {
       currentCalculationData = null;
       renderAwaitingState();
+      return;
+    }
+
+    if (isStaticHost) {
+      const localData = computeLocalCalculation(state);
+      currentCalculationData = localData;
+      renderDashboard(localData);
       return;
     }
 
@@ -686,7 +696,7 @@
         return;
       }
     } catch (err) {
-      // Fallback local imediato caso o HTML seja aberto diretamente sem o servidor Node
+      // Fallback local imediato caso o servidor Node não esteja ativo
       const localData = computeLocalCalculation(state);
       currentCalculationData = localData;
       renderDashboard(localData);
@@ -962,11 +972,25 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
           ]
         },
         {
+          heading: 'O efeito chicote da sazonalidade',
+          paragraphs: [
+            'O comércio e os serviços funcionam em ondas. Um mês de R$ 25.000,00 frequentemente é seguido por um mês de R$ 3.500,00 em períodos de baixa sazonalidade (como início de ano ou períodos pós-feriados). O problema é que boletos fixos não aceitam desculpas sobre o mercado estar lento.',
+            'Quando seu custo de vida fixo atinge o teto do seu mês bom, qualquer oscilação negativa força você a recorrer ao cheque especial, cartões rotativos ou empréstimos pessoais para sustentar a pose.'
+          ]
+        },
+        {
           heading: 'Como blindar seu patrimônio na prática',
           tips: [
             'Regra de Ouro do Mês Recorde: O excedente financeiro pertence ao seu futuro e ao seu colchão de segurança, não à concessionária de veículos.',
             'Congele o Custo de Vida Essencial: Seu custo fixo (moradia, alimentação básica, saúde) nunca deve ultrapassar a média líquida dos seus 3 piores meses do ano.',
-            'Crie uma recompensa com teto fixo: Destine de 10% a 15% do excedente para comemoração imediata e prazer sem culpa. O restante vai para o Colchão de Sazonalidade.'
+            'Crie uma recompensa com teto fixo: Destine de 10% a 15% do excedente para comemoração imediata e prazer sem culpa. O restante vai para o Colchão de Sazonalidade.',
+            'Espere 30 dias para compras de alto valor: Nunca tome decisões de investimento em bens duráveis na semana em que a comissão caiu.'
+          ]
+        },
+        {
+          heading: 'Conclusão e Mentalidade Sênior',
+          paragraphs: [
+            'Profissionais comissionados de elite não são reconhecidos pelo quanto ganham no seu melhor mês, mas sim pela serenidade e estabilidade com que atravessam os meses mais difíceis sem dever um único centavo a ninguém.'
           ]
         }
       ]
@@ -981,11 +1005,18 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
       badge: 'Metodologia',
       sections: [
         {
+          heading: 'Por que o modelo tradicional falha para o comissionado',
+          paragraphs: [
+            'Quem recebe salário com carteira assinada (CLT) tem a previsibilidade como aliada: sabe o dia exato e o valor que cairá na conta. Quem vive de comissões, por outro lado, sofre com a imprevisibilidade de datas e montantes.',
+            'O erro clássico de 90% dos corretores e vendedores autônomos é receber o valor da comissão na mesma conta de onde pagam o condomínio, a luz e o supermercado. Isso gera uma falsa percepção de riqueza transitória e ansiedade constante.'
+          ]
+        },
+        {
           heading: 'A estrutura dos dois bolsos (PJ e PF)',
           paragraphs: [
             "O método do Salário Sintético baseia-se em dissociar a velocidade da sua produção comercial do seu consumo pessoal. Você atuará como o 'patrão' de si mesmo através de dois compartimentos distintos:",
             '1. Conta Represadora (Bolso Empresarial / Colchão): Onde caem todas as comissões brutas, de onde saem os impostos e onde fica retido o excedente dos meses fortes.',
-            '2. Conta de Consumo Pessoal (PF): Onde você recebe apenas e exclusivamente o seu Salário Estável pré-definido, sempre no mesmo dia do mês.'
+            '2. Conta de Consumo Pessoal (PF): Onde você recebe apenas e exclusivamente o seu Salário Estável pré-definido, sempre no mesmo dia do mês (por exemplo, todo dia 5).'
           ]
         },
         {
@@ -993,7 +1024,14 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
           tips: [
             'Mapeie seu Custo Essencial Fixo: Aluguel/Financiamento, contas de consumo, supermercado e convênio médico.',
             'Adicione uma margem de conforto sustentável: Defina um salário que garanta qualidade de vida sem exageros.',
+            'Calcule o ponto de equilíbrio: Seu Salário Estável deve ser menor ou igual à média móvel líquida dos seus últimos 12 meses.',
             'Programe a transferência automática: Todo dia 5, transfira exatamente o valor do Salário Estável da sua conta reserva para a sua conta pessoal.'
+          ]
+        },
+        {
+          heading: 'O alívio mental da previsibilidade',
+          paragraphs: [
+            'Quando seu custo de vida é pago pontualmente todo mês por essa reserva programada, você volta a negociar com clientes a partir de uma posição de tranquilidade e autoridade, e nunca mais a partir do desespero por fechar qualquer venda.'
           ]
         }
       ]
@@ -1010,15 +1048,32 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
         {
           heading: 'A função biológica do seu colchão financeiro',
           paragraphs: [
+            'Muitos profissionais cometem o erro grave de aplicar o dinheiro do colchão de sazonalidade em ações, fundos imobiliários com oscilação de cotas ou em CDBs que travam o resgate por 2 a 3 anos em troca de uma taxa ligeiramente maior.',
             'A missão principal dessa reserva NÃO é enriquecimento por valorização, mas sim disponibilidade instantânea sem perda de principal. Se você precisar do dinheiro em uma terça-feira para cobrir a retirada do mês, o capital deve estar integral e acessível.'
+          ]
+        },
+        {
+          heading: 'Os três pilares da alocação do Colchão',
+          paragraphs: [
+            'Para cumprir seu papel, o veículo de investimento precisa atender a três critérios inegociáveis:',
+            '• Liquidez Diária (D+0 ou D+1): Capacidade de resgate imediato sem penalidades ou carências.',
+            '• Baixa Volatilidade (Renda Fixa Pós-Fixada): Indexado ao CDI ou taxa Selic, garantindo que o saldo nunca diminua de um dia para o outro.',
+            '• Risco de Crédito Mínimo: Emissores de primeira linha (Tesouro Nacional ou grandes instituições financeiras com garantia do FGC).'
           ]
         },
         {
           heading: 'Melhores opções disponíveis no mercado brasileiro',
           tips: [
-            'Tesouro Selic: A opção mais segura do país, garantida pelo Governo Federal, com liquidez diária.',
-            'CDB de Liquidez Diária (100% a 102% do CDI): Disponível em bancos sólidos, com cobertura do FGC.',
+            'Tesouro Selic: A opção mais segura do país, garantida pelo Governo Federal, com liquidez diária e rentabilidade atrelada à taxa básica de juros.',
+            'CDB de Liquidez Diária (100% a 102% do CDI): Disponível em bancos sólidos, com cobertura do Fundo Garantidor de Créditos (FGC) até R$ 250 mil por CPF/CNPJ.',
+            'Contas Remuneradas e Fundos DI Simples com Taxa Zero: Excelente praticidade para a movimentação mensal automática sem cobrança de taxa de administração abusiva.',
             'Evite a todo custo: Fundos com carência de 30 dias (D+30), LCIs/LCAs travadas por meses ou renda variável.'
+          ]
+        },
+        {
+          heading: 'Separação psicológica',
+          paragraphs: [
+            'Mantenha esse colchão em uma instituição financeira diferente daquela onde você possui o cartão de crédito do dia a dia. Uma pequena barreira de fricção evita resgates por impulso.'
           ]
         }
       ]
@@ -1035,15 +1090,32 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
         {
           heading: 'O dinheiro que entra na sua conta não é todo seu',
           paragraphs: [
-            'Uma das maiores causas de endividamento entre corretores de imóveis, representantes comerciais e autônomos é a mistura entre a receita bruta da comissão e o lucro líquido real.'
+            'Uma das maiores causas de endividamento entre corretores de imóveis, representantes comerciais e autônomos é a mistura entre a receita bruta da comissão e o lucro líquido real.',
+            'Ao emitir uma nota fiscal de R$ 10.000,00 ou receber uma comissão via RPA (Recibo de Pagamento a Autônomo), uma fração considerável daquele valor já pertence à União, ao Município ou à previdência social. Tratar esse montante como renda disponível é pedir para acumular dívidas tributárias impagáveis.'
+          ]
+        },
+        {
+          heading: 'Os diferentes enquadramentos fiscais',
+          paragraphs: [
+            'Entenda como a mordida tributária atua em cada modalidade:',
+            '• Simples Nacional (Anexo III ou V): Alíquotas que variam geralmente entre 6% e 15,5% sobre a receita bruta, pagas mensalmente através da guia DAS.',
+            '• Lucro Presumido: Tributação comum para determinadas corretagens e representações, oscilando entre 13,33% e 16,33% somando impostos federais e municipais (ISS).',
+            '• Pessoa Física / Carnê-Leão: A opção mais onerosa, onde os rendimentos podem ser tributados em até 27,5% de IRPF mais a contribuição previdenciária (INSS).'
           ]
         },
         {
           heading: 'O protocolo do provisionamento imediato',
           tips: [
-            'Identifique sua alíquota efetiva real: Consulte seu contador e descubra exatamente o percentual médio dos seus impostos.',
+            'Identifique sua alíquota efetiva real: Consulte seu contador e descubra exatamente o percentual médio dos seus impostos e custos operacionais de emissão.',
             "Abra uma subconta de custódia tributária: Mantenha um 'cofrinho' ou conta separada exclusivamente denominada 'Reserva Fiscal'.",
-            'Ação no mesmo minuto: Transfira imediatamente o percentual do imposto para a conta de reserva fiscal assim que o PIX/TED cair.'
+            'Ação no mesmo minuto: Se você recebeu R$ 20.000,00 e sua alíquota é de 8%, transfira imediatamente R$ 1.600,00 para a conta de impostos no mesmo instante em que a TED/PIX for creditada.',
+            'Nunca conte com a comissão do mês seguinte para pagar o imposto do mês anterior: Essa é a espiral de morte do fluxo de caixa autônomo.'
+          ]
+        },
+        {
+          heading: 'Paz de espírito fiscal',
+          paragraphs: [
+            'Quando chega o dia 20 e vence o boleto do Simples Nacional ou o Carnê-Leão, a sensação de já ter o dinheiro 100% reservado e rendendo CDI diário é um dos maiores alívios que um empreendedor pode desfrutar.'
           ]
         }
       ]
@@ -1051,6 +1123,12 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
   ];
 
   const loadArticles = async () => {
+    if (isStaticHost) {
+      articlesData = FALLBACK_ARTICLES;
+      renderArticlesList(articlesData);
+      return;
+    }
+
     try {
       const response = await fetch('/api/articles');
       if (!response.ok) throw new Error('Falha ao carregar artigos');
@@ -1061,7 +1139,6 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
         return;
       }
     } catch (err) {
-      // Usa artigos embutidos caso seja aberto direto via arquivo local (file://)
       articlesData = FALLBACK_ARTICLES;
       renderArticlesList(articlesData);
     }
