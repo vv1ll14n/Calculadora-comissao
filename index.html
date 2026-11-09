@@ -69,6 +69,23 @@
       background: #cbd5e1;
       border-radius: 4px;
     }
+    @keyframes stepFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .wizard-step-animate {
+      animation: stepFadeIn 0.22s ease-out forwards;
+    }
+    .diag-highlight {
+      box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.55), 0 4px 12px -2px rgba(16, 185, 129, 0.12);
+      border-color: #6ee7b7 !important;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-200 selection:text-emerald-950">
@@ -122,12 +139,12 @@
 
         <!-- CTA Principal -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <a href="#calculadora" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-emerald-400 text-emerald-950 font-semibold text-base hover:bg-emerald-500 shadow-sm transition-all hover:shadow hover:-translate-y-0.5">
+          <button id="btnHeroSimulate" type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-emerald-400 text-emerald-950 font-semibold text-base hover:bg-emerald-500 shadow-sm transition-all hover:shadow hover:-translate-y-0.5 cursor-pointer">
             Simular Meu Nivelamento de Renda
             <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
-          </a>
+          </button>
           <a href="#artigos" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white border border-slate-300 text-slate-700 font-medium text-base hover:bg-slate-50 transition-colors">
             Ler Guia de Bolso
           </a>
@@ -190,6 +207,9 @@
 
         <!-- Ações Rápidas de Teste -->
         <div class="flex items-center gap-2 flex-wrap">
+          <button id="btnOpenWizardHeader" type="button" class="px-3.5 py-1.5 rounded-lg bg-emerald-400 hover:bg-emerald-500 text-xs font-bold text-emerald-950 transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer">
+            <span>✨</span> Simular Passo a Passo
+          </button>
           <button id="btnPresetRecord" type="button" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-emerald-300 text-xs font-medium text-slate-700 hover:text-emerald-800 transition-colors flex items-center gap-1.5 shadow-2xs">
             <span>⚡</span> Mês Recorde (Alta)
           </button>
@@ -208,6 +228,17 @@
         <!-- ==================== COLUNA ESQUERDA: PARÂMETROS (5 COLS) ==================== -->
         <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
           
+          <!-- Banner de Acesso Rápido ao Modo Guiado Passo a Passo -->
+          <div class="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 flex items-center justify-between gap-3">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-900 block">Modo Guiado Interativo</span>
+              <span class="text-xs text-slate-600">Prefere preencher fase a fase sem distrações?</span>
+            </div>
+            <button id="btnOpenWizardCard" type="button" class="px-3 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-500 text-emerald-950 font-bold text-xs shadow-2xs transition-all shrink-0 cursor-pointer">
+              Abrir Passo a Passo →
+            </button>
+          </div>
+
           <!-- Seletor de Estratégia de Alocação -->
           <div>
             <div class="flex items-center justify-between mb-2">
@@ -364,7 +395,7 @@
                   </span>
                 </div>
                 <p id="statusDescText" class="text-xs text-slate-600 mt-1 leading-relaxed">
-                  Preencha seus valores nos campos ao lado (ou selecione "Mês Recorde" / "Mês Fraco" acima) para gerar o diagnóstico de saúde financeira e a divisão inteligente da sua renda.
+                  Preencha seus valores passo a passo ao lado (ou selecione "Mês Recorde" / "Mês Fraco" acima) para gerar o diagnóstico de saúde financeira e a divisão inteligente da sua renda.
                 </p>
               </div>
             </div>
@@ -374,7 +405,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             
             <!-- Card 1: Salário Estável Garantido -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+            <div id="diagCardSalary" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden transition-all duration-300">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">1. Retirada Pessoal</span>
                 <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center text-xs">
@@ -391,7 +422,7 @@
             </div>
 
             <!-- Card 2: Provisão de Impostos e Custos -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+            <div id="diagCardTax" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden transition-all duration-300">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">2. Provisão Fiscal</span>
                 <span class="w-6 h-6 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
@@ -408,7 +439,7 @@
             </div>
 
             <!-- Card 3: Aporte ou Resgate do Colchão -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+            <div id="diagCardBuffer" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden transition-all duration-300">
               <div class="flex items-center justify-between mb-2">
                 <span id="cardBufferActionBadge" class="text-xs font-semibold uppercase tracking-wider text-slate-400">3. Colchão de Sazonalidade</span>
                 <span id="cardBufferActionIcon" class="w-6 h-6 rounded-md bg-slate-100 text-slate-400 flex items-center justify-center text-xs">
@@ -425,7 +456,7 @@
             </div>
 
             <!-- Card 4: Lazer Sem Culpa + Patrimônio -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+            <div id="diagCardBonus" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm relative overflow-hidden transition-all duration-300">
               <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">4. Excedente Livre</span>
                 <span class="w-6 h-6 rounded-md bg-teal-50 text-teal-700 flex items-center justify-center text-xs">
@@ -445,7 +476,7 @@
           </div>
 
           <!-- Barra de Alocação Visual (100% Empilhada) -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3">
+          <div id="diagAllocationBox" class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 transition-all duration-300">
             <div class="flex items-center justify-between">
               <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Destino de Cada Centavo da Renda Bruta</h4>
               <span id="totalIncomeHeader" class="text-xs font-semibold text-slate-500">Total: R$ -- (Aguardando dados)</span>
@@ -486,7 +517,7 @@
           </div>
 
           <!-- Bloco Termômetro de Blindagem & Sobrevivência -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+          <div id="diagShieldBox" class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-1.5">
                 <div>
@@ -576,6 +607,371 @@
     </div>
   </section>
 
+  <!-- ==================== TELA SOBREPOSTA: SIMULADOR PASSO A PASSO (WIZARD MODAL) ==================== -->
+  <div id="simulatorWizardModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <!-- Backdrop escuro com desfoque -->
+    <div id="wizardModalBackdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"></div>
+
+    <div class="min-h-full flex items-center justify-center p-4 sm:p-6">
+      <div class="relative w-full max-w-xl bg-white rounded-2xl text-left shadow-2xl border border-slate-200 overflow-hidden transform transition-all my-6">
+
+        <!-- Cabeçalho da Tela Sobreposta -->
+        <div class="px-6 pt-5 pb-4 bg-slate-50/80 border-b border-slate-200/80 space-y-3.5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span id="wizardStepCounterBadge" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-900 border border-emerald-200">
+                  Fase 1 de 4
+                </span>
+                <span id="wizardStepShortLabel" class="text-xs font-semibold text-slate-600">
+                  Renda & Custos do Mês
+                </span>
+              </div>
+              <h3 class="text-base sm:text-lg font-extrabold text-slate-900">
+                Simulador Guiado de Nivelamento de Renda
+              </h3>
+            </div>
+
+            <button id="wizardModalCloseBtn" type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 flex items-center justify-center transition-colors shrink-0" aria-label="Fechar simulador">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Barra de Progresso Contínua -->
+          <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+            <div id="wizardProgressBar" class="h-full bg-emerald-400 rounded-full transition-all duration-300" style="width: 25%"></div>
+          </div>
+
+          <!-- 4 Botões de Fase (Stepper) -->
+          <div class="grid grid-cols-4 gap-1.5">
+            <button type="button" data-goto-step="1" class="wizard-tab-btn group flex flex-col items-start p-2 rounded-xl border border-emerald-400 bg-emerald-50/80 text-left transition-all cursor-pointer">
+              <div class="flex items-center justify-between w-full mb-0.5">
+                <span class="step-num w-5 h-5 rounded-full bg-emerald-400 text-emerald-950 text-[10px] font-extrabold flex items-center justify-center">1</span>
+                <span class="step-check hidden text-emerald-600 text-xs font-bold">✓</span>
+              </div>
+              <span class="text-[11px] font-bold text-slate-900 truncate w-full">Renda</span>
+            </button>
+
+            <button type="button" data-goto-step="2" class="wizard-tab-btn group flex flex-col items-start p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-left transition-all cursor-pointer">
+              <div class="flex items-center justify-between w-full mb-0.5">
+                <span class="step-num w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold flex items-center justify-center">2</span>
+                <span class="step-check hidden text-emerald-600 text-xs font-bold">✓</span>
+              </div>
+              <span class="text-[11px] font-medium text-slate-600 truncate w-full">Salário</span>
+            </button>
+
+            <button type="button" data-goto-step="3" class="wizard-tab-btn group flex flex-col items-start p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-left transition-all cursor-pointer">
+              <div class="flex items-center justify-between w-full mb-0.5">
+                <span class="step-num w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold flex items-center justify-center">3</span>
+                <span class="step-check hidden text-emerald-600 text-xs font-bold">✓</span>
+              </div>
+              <span class="text-[11px] font-medium text-slate-600 truncate w-full">Colchão</span>
+            </button>
+
+            <button type="button" data-goto-step="4" class="wizard-tab-btn group flex flex-col items-start p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-left transition-all cursor-pointer">
+              <div class="flex items-center justify-between w-full mb-0.5">
+                <span class="step-num w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold flex items-center justify-center">4</span>
+                <span class="step-check hidden text-emerald-600 text-xs font-bold">✓</span>
+              </div>
+              <span class="text-[11px] font-medium text-slate-600 truncate w-full">Perfil</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Corpo das 4 Fases -->
+        <div class="px-6 py-6 space-y-5">
+
+          <!-- ==================== FASE 1: RENDA BRUTA E CUSTOS DE VENDA ==================== -->
+          <div data-step-panel="1" class="wizard-step-panel wizard-step-animate space-y-5">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Fase 1 • Entrada Financeira</span>
+              <h4 class="text-lg font-bold text-slate-900 mt-0.5">Quanto entrou neste mês?</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Informe seu ganho bruto total do mês (fixo + comissões) e ajuste as taxas operacionais.</p>
+            </div>
+
+            <!-- Input Ganho Bruto no Modal -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="modalInputGrossIncome" class="text-xs font-semibold text-slate-700">
+                  Ganho Bruto do Mês Atual
+                </label>
+                <span class="text-[11px] text-slate-400">Fixo + Comissões recebidas</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-300 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all bg-slate-50/50 focus-within:bg-white">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-base font-semibold">R$</span>
+                <input type="text" id="modalInputGrossIncome" inputmode="numeric" class="w-full pl-11 pr-4 py-3.5 bg-transparent rounded-xl text-slate-900 font-extrabold text-lg focus:outline-none placeholder:text-slate-400 placeholder:font-normal placeholder:text-sm" placeholder="Ex: 18.500,00" value="">
+              </div>
+              <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                <span class="text-[10px] font-medium text-slate-400 mr-1">Adicionar rápido:</span>
+                <button type="button" data-quick-add="grossIncome:1000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 1.000</button>
+                <button type="button" data-quick-add="grossIncome:5000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 5.000</button>
+                <button type="button" data-quick-add="grossIncome:10000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 10.000</button>
+              </div>
+            </div>
+
+            <!-- Sliders da Fase 1 -->
+            <div class="space-y-4 pt-3 border-t border-slate-100">
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <span class="font-medium text-slate-700">Impostos & Custos de Venda (Simples/Giro)</span>
+                  <span id="modalTaxRateLabel" class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded text-[11px]">6%</span>
+                </div>
+                <input type="range" id="modalSliderTaxRate" min="0" max="35" step="0.5" value="6" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                  <span>0% (PF Isento)</span>
+                  <span>6% (Simples)</span>
+                  <span>15% (Presumido)</span>
+                  <span>35%</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1">
+                  <span class="font-medium text-slate-700">Comissão Média sobre Volume de Vendas</span>
+                  <span id="modalCommissionRateLabel" class="font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded text-[11px]">5.0%</span>
+                </div>
+                <input type="range" id="modalSliderCommissionRate" min="0.5" max="30" step="0.5" value="5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+                  <span>0.5% (Grosso)</span>
+                  <span>5% (Imóveis/B2B)</span>
+                  <span>15% (Serviços)</span>
+                  <span>30%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prévia Instantânea da Fase 1 -->
+            <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between gap-3">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">Renda Líquida Real Disponível</span>
+                <span id="step1NetPreview" class="text-base font-extrabold text-emerald-950">R$ 0,00</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-medium text-slate-500 block">Provisão Fiscal Retida</span>
+                <span id="step1TaxPreview" class="text-xs font-bold text-slate-700">R$ 0,00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== FASE 2: PADRÃO DE VIDA E SALÁRIO ESTÁVEL ==================== -->
+          <div data-step-panel="2" class="wizard-step-panel wizard-step-animate hidden space-y-5">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Fase 2 • Padrão de Vida</span>
+              <h4 class="text-lg font-bold text-slate-900 mt-0.5">Qual o seu Salário Estável ideal?</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Defina o custo mínimo das contas básicas da casa e a retirada mensal fixa que deseja transferir para sua Conta PF.</p>
+            </div>
+
+            <!-- Input Custo Essencial -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="modalInputEssentialCost" class="text-xs font-semibold text-slate-700">
+                  Custo Essencial Fixo de Vida
+                </label>
+                <span class="text-[11px] text-slate-400">Aluguel, contas, alimentação básica</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-300 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all bg-slate-50/50 focus-within:bg-white">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-base font-semibold">R$</span>
+                <input type="text" id="modalInputEssentialCost" inputmode="numeric" class="w-full pl-11 pr-4 py-3 bg-transparent rounded-xl text-slate-900 font-bold text-base focus:outline-none placeholder:text-slate-400 placeholder:font-normal placeholder:text-sm" placeholder="Ex: 4.200,00" value="">
+              </div>
+              <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                <span class="text-[10px] font-medium text-slate-400 mr-1">Adicionar rápido:</span>
+                <button type="button" data-quick-add="essentialCost:500" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 500</button>
+                <button type="button" data-quick-add="essentialCost:1000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 1.000</button>
+                <button type="button" data-quick-add="essentialCost:3000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 3.000</button>
+              </div>
+            </div>
+
+            <!-- Input Salário Estável -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="modalInputTargetSalary" class="text-xs font-semibold text-slate-700">
+                  Meta de Salário Estável (Retirada Fixa)
+                </label>
+                <span class="text-[11px] text-slate-400">Seu contracheque mensal previsível</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-300 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all bg-slate-50/50 focus-within:bg-white">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-base font-semibold">R$</span>
+                <input type="text" id="modalInputTargetSalary" inputmode="numeric" class="w-full pl-11 pr-4 py-3 bg-transparent rounded-xl text-emerald-900 font-extrabold text-base focus:outline-none placeholder:text-slate-400 placeholder:font-normal placeholder:text-sm" placeholder="Ex: 7.500,00" value="">
+              </div>
+              <div class="flex items-center justify-between gap-1.5 mt-2 flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  <button type="button" data-quick-add="targetSalary:1000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 1.000</button>
+                  <button type="button" data-quick-add="targetSalary:2500" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 2.500</button>
+                </div>
+                <button type="button" id="btnSuggestTargetSalary" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">
+                  ✨ Sugerir +40% sobre Essencial
+                </button>
+              </div>
+            </div>
+
+            <!-- Feedback Contextual Instantâneo da Fase 2 -->
+            <div id="step2FeedbackBox" class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3">
+              <div>
+                <span id="step2FeedbackTitle" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Margem de Conforto no Salário</span>
+                <span id="step2MarginPreview" class="text-sm font-extrabold text-slate-800">Preencha para ver sua margem</span>
+              </div>
+              <span id="step2StatusBadge" class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700">
+                Aguardando
+              </span>
+            </div>
+          </div>
+
+          <!-- ==================== FASE 3: SAZONALIDADE E COLCHÃO ATUAL ==================== -->
+          <div data-step-panel="3" class="wizard-step-panel wizard-step-animate hidden space-y-5">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Fase 3 • Blindagem contra Baixas</span>
+              <h4 class="text-lg font-bold text-slate-900 mt-0.5">Sazonalidade e Reserva Atual</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Informe sua média de ganho nos meses mais fracos e quanto você já possui guardado no Colchão hoje.</p>
+            </div>
+
+            <!-- Input Média Meses Fracos -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="modalInputLowMonth" class="text-xs font-semibold text-slate-700">
+                  Média Líquida nos Meses Fracos
+                </label>
+                <span class="text-[11px] text-slate-400">Pior cenário ("Vacas Magras")</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-300 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all bg-slate-50/50 focus-within:bg-white">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-base font-semibold">R$</span>
+                <input type="text" id="modalInputLowMonth" inputmode="numeric" class="w-full pl-11 pr-4 py-3 bg-transparent rounded-xl text-slate-900 font-bold text-base focus:outline-none placeholder:text-slate-400 placeholder:font-normal placeholder:text-sm" placeholder="Ex: 3.000,00" value="">
+              </div>
+              <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                <span class="text-[10px] font-medium text-slate-400 mr-1">Adicionar rápido:</span>
+                <button type="button" data-quick-add="lowMonthAverage:1000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 1.000</button>
+                <button type="button" data-quick-add="lowMonthAverage:2500" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 2.500</button>
+              </div>
+            </div>
+
+            <!-- Input Saldo Atual no Colchão -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="modalInputCurrentBuffer" class="text-xs font-semibold text-slate-700">
+                  Saldo Atual Guardado no Colchão
+                </label>
+                <span class="text-[11px] text-slate-400">Reserva de liquidez diária hoje</span>
+              </div>
+              <div class="relative rounded-xl border border-slate-300 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all bg-slate-50/50 focus-within:bg-white">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-base font-semibold">R$</span>
+                <input type="text" id="modalInputCurrentBuffer" inputmode="numeric" class="w-full pl-11 pr-4 py-3 bg-transparent rounded-xl text-slate-900 font-extrabold text-base focus:outline-none placeholder:text-slate-400 placeholder:font-normal placeholder:text-sm" placeholder="Ex: 15.000,00" value="">
+              </div>
+              <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                <span class="text-[10px] font-medium text-slate-400 mr-1">Adicionar rápido:</span>
+                <button type="button" data-quick-add="currentBuffer:1000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 1.000</button>
+                <button type="button" data-quick-add="currentBuffer:5000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 5.000</button>
+                <button type="button" data-quick-add="currentBuffer:10000" class="quick-add-btn px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-800 border border-slate-200 hover:border-emerald-200 text-xs font-semibold transition-colors cursor-pointer">+ R$ 10.000</button>
+              </div>
+            </div>
+
+            <!-- Feedback Contextual Instantâneo da Fase 3 -->
+            <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between gap-3">
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">Déficit Mensal em Vacas Magras</span>
+                <span id="step3GapPreview" class="text-base font-extrabold text-emerald-950">R$ 0,00 / mês</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] font-medium text-slate-500 block">Colchão Ideal (6 Meses)</span>
+                <span id="step3IdealBufferPreview" class="text-xs font-bold text-slate-800">R$ 0,00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== FASE 4: ESTRATÉGIA E REVISÃO FINAL ==================== -->
+          <div data-step-panel="4" class="wizard-step-panel wizard-step-animate hidden space-y-5">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Fase 4 • Fechamento da Estratégia</span>
+              <h4 class="text-lg font-bold text-slate-900 mt-0.5">Perfil de Distribuição e Revisão</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Escolha como distribuir o excedente dos meses bons e confira o resumo antes de gerar seu painel completo.</p>
+            </div>
+
+            <!-- Seletor de Estratégia no Modal -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-semibold uppercase tracking-wider text-slate-600">Perfil de Distribuição</label>
+                <span id="modalStrategyBadgeText" class="text-xs font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Equilibrado (Recomendado)</span>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
+                <button type="button" data-strategy="shield" class="strategy-btn py-2.5 px-1 text-center rounded-lg transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
+                  🛡️ Blindagem
+                </button>
+                <button type="button" data-strategy="balanced" class="strategy-btn py-2.5 px-1 text-center rounded-lg transition-all bg-white text-emerald-950 shadow-xs border border-slate-200 cursor-pointer">
+                  ⚖️ Equilibrado
+                </button>
+                <button type="button" data-strategy="wealth" class="strategy-btn py-2.5 px-1 text-center rounded-lg transition-all text-slate-600 hover:text-slate-900 cursor-pointer">
+                  📈 Patrimônio
+                </button>
+              </div>
+              <p id="modalStrategyDesc" class="text-[11px] text-slate-500 mt-2 leading-relaxed bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+                Equilibrado: 60% para Colchão de Sazonalidade, 15% para Lazer livre imediato e 25% para Construção de Patrimônio / 13º.
+              </p>
+            </div>
+
+            <!-- Resumo Rápido Interativo das Fases 1 a 3 -->
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 block">Resumo das Informações Preenchidas</span>
+
+              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+                <div>
+                  <span class="text-slate-400 text-[11px] block">Fase 1 • Ganho Bruto & Taxas</span>
+                  <span id="summaryStep1Text" class="font-bold text-slate-800">R$ 0,00 (6% imp.)</span>
+                </div>
+                <button type="button" data-goto-step="1" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 px-2.5 py-1 rounded-lg hover:bg-emerald-50 transition-colors cursor-pointer">
+                  Editar
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+                <div>
+                  <span class="text-slate-400 text-[11px] block">Fase 2 • Essencial & Salário Estável</span>
+                  <span id="summaryStep2Text" class="font-bold text-slate-800">R$ 0,00 / R$ 0,00</span>
+                </div>
+                <button type="button" data-goto-step="2" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 px-2.5 py-1 rounded-lg hover:bg-emerald-50 transition-colors cursor-pointer">
+                  Editar
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs">
+                <div>
+                  <span class="text-slate-400 text-[11px] block">Fase 3 • Mês Fraco & Colchão Atual</span>
+                  <span id="summaryStep3Text" class="font-bold text-slate-800">R$ 0,00 / R$ 0,00</span>
+                </div>
+                <button type="button" data-goto-step="3" class="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 px-2.5 py-1 rounded-lg hover:bg-emerald-50 transition-colors cursor-pointer">
+                  Editar
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Rodapé de Navegação da Tela Sobreposta -->
+        <div class="px-6 py-4 bg-slate-50 border-t border-slate-200/80 flex items-center justify-between gap-3">
+          <button id="btnPrevStep" type="button" class="px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-semibold text-xs transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:pointer-events-none cursor-pointer">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Fase Anterior
+          </button>
+
+          <span class="hidden sm:inline-block text-[11px] text-slate-400 font-medium">
+            <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-slate-600 font-semibold">Enter ↵</kbd> avança
+          </span>
+
+          <button id="btnNextStep" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-400 hover:bg-emerald-500 text-emerald-950 font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+            <span id="btnNextStepText">Próxima Fase</span>
+            <svg id="btnNextStepIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== MODAL DE LEITURA DO ARTIGO ==================== -->
   <div id="articleModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
     <!-- Backdrop Blur -->
@@ -645,6 +1041,6 @@
   </footer>
 
   <!-- Script da Aplicação -->
-  <script src="/app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
