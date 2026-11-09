@@ -25,6 +25,17 @@
   let articlesData = [];
   let debounceTimer = null;
 
+  // Estado de Navegação Passo a Passo (Tela Sobreposta / Wizard Modal)
+  let currentStep = 1;
+  const TOTAL_STEPS = 4;
+
+  const stepMeta = {
+    1: { shortLabel: 'Renda & Custos do Mês', focusId: 'modalInputGrossIncome' },
+    2: { shortLabel: 'Padrão de Vida & Salário', focusId: 'modalInputEssentialCost' },
+    3: { shortLabel: 'Sazonalidade & Colchão', focusId: 'modalInputLowMonth' },
+    4: { shortLabel: 'Estratégia & Revisão Final', focusId: null }
+  };
+
   // ==================== FORMATADORES E UTILITÁRIOS ====================
   const currencyFormatter = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -131,6 +142,58 @@
     metricMonthsZero: document.getElementById('metricMonthsZero'),
     metricSalesVolume: document.getElementById('metricSalesVolume'),
 
+    // Wizard (Tela Sobreposta Passo a Passo)
+    simulatorWizardModal: document.getElementById('simulatorWizardModal'),
+    wizardModalBackdrop: document.getElementById('wizardModalBackdrop'),
+    wizardModalCloseBtn: document.getElementById('wizardModalCloseBtn'),
+    btnHeroSimulate: document.getElementById('btnHeroSimulate'),
+    btnOpenWizardHeader: document.getElementById('btnOpenWizardHeader'),
+    btnOpenWizardCard: document.getElementById('btnOpenWizardCard'),
+
+    modalInputGrossIncome: document.getElementById('modalInputGrossIncome'),
+    modalInputEssentialCost: document.getElementById('modalInputEssentialCost'),
+    modalInputTargetSalary: document.getElementById('modalInputTargetSalary'),
+    modalInputLowMonth: document.getElementById('modalInputLowMonth'),
+    modalInputCurrentBuffer: document.getElementById('modalInputCurrentBuffer'),
+    modalSliderTaxRate: document.getElementById('modalSliderTaxRate'),
+    modalTaxRateLabel: document.getElementById('modalTaxRateLabel'),
+    modalSliderCommissionRate: document.getElementById('modalSliderCommissionRate'),
+    modalCommissionRateLabel: document.getElementById('modalCommissionRateLabel'),
+    modalStrategyBadgeText: document.getElementById('modalStrategyBadgeText'),
+    modalStrategyDesc: document.getElementById('modalStrategyDesc'),
+
+    wizardStepCounterBadge: document.getElementById('wizardStepCounterBadge'),
+    wizardStepShortLabel: document.getElementById('wizardStepShortLabel'),
+    wizardProgressBar: document.getElementById('wizardProgressBar'),
+    wizardTabBtns: document.querySelectorAll('.wizard-tab-btn'),
+    wizardStepPanels: document.querySelectorAll('.wizard-step-panel'),
+    btnPrevStep: document.getElementById('btnPrevStep'),
+    btnNextStep: document.getElementById('btnNextStep'),
+    btnNextStepText: document.getElementById('btnNextStepText'),
+    btnNextStepIcon: document.getElementById('btnNextStepIcon'),
+
+    // Previews Contextuais por Passo
+    step1NetPreview: document.getElementById('step1NetPreview'),
+    step1TaxPreview: document.getElementById('step1TaxPreview'),
+    step2FeedbackBox: document.getElementById('step2FeedbackBox'),
+    step2FeedbackTitle: document.getElementById('step2FeedbackTitle'),
+    step2MarginPreview: document.getElementById('step2MarginPreview'),
+    step2StatusBadge: document.getElementById('step2StatusBadge'),
+    btnSuggestTargetSalary: document.getElementById('btnSuggestTargetSalary'),
+    step3GapPreview: document.getElementById('step3GapPreview'),
+    step3IdealBufferPreview: document.getElementById('step3IdealBufferPreview'),
+    summaryStep1Text: document.getElementById('summaryStep1Text'),
+    summaryStep2Text: document.getElementById('summaryStep2Text'),
+    summaryStep3Text: document.getElementById('summaryStep3Text'),
+
+    // Blocos da Coluna Direita
+    diagCardSalary: document.getElementById('diagCardSalary'),
+    diagCardTax: document.getElementById('diagCardTax'),
+    diagCardBuffer: document.getElementById('diagCardBuffer'),
+    diagCardBonus: document.getElementById('diagCardBonus'),
+    diagAllocationBox: document.getElementById('diagAllocationBox'),
+    diagShieldBox: document.getElementById('diagShieldBox'),
+
     // Artigos e Modal
     articlesGrid: document.getElementById('articlesGrid'),
     articleModal: document.getElementById('articleModal'),
@@ -165,8 +228,8 @@
     }
   };
 
-  // ==================== SINCRONIZAÇÃO UI -> ESTADO ====================
-  const syncStateFromInputs = () => {
+  // ==================== SINCRONIZAÇÃO UI <-> ESTADO ====================
+  const syncStateFromMainInputs = () => {
     state.grossIncome = parseCurrencyInput(dom.inputGrossIncome.value);
     state.essentialCost = parseCurrencyInput(dom.inputEssentialCost.value);
     state.targetSalary = parseCurrencyInput(dom.inputTargetSalary.value);
@@ -176,7 +239,19 @@
     state.commissionRate = parseFloat(dom.sliderCommissionRate.value) || 0;
   };
 
+  const syncStateFromModalInputs = () => {
+    if (!dom.modalInputGrossIncome) return;
+    state.grossIncome = parseCurrencyInput(dom.modalInputGrossIncome.value);
+    state.essentialCost = parseCurrencyInput(dom.modalInputEssentialCost.value);
+    state.targetSalary = parseCurrencyInput(dom.modalInputTargetSalary.value);
+    state.lowMonthAverage = parseCurrencyInput(dom.modalInputLowMonth.value);
+    state.currentBuffer = parseCurrencyInput(dom.modalInputCurrentBuffer.value);
+    state.taxAndCostRate = parseFloat(dom.modalSliderTaxRate.value) || 0;
+    state.commissionRate = parseFloat(dom.modalSliderCommissionRate.value) || 0;
+  };
+
   const syncInputsFromState = () => {
+    // Inputs da página principal
     dom.inputGrossIncome.value = formatForInput(state.grossIncome);
     dom.inputEssentialCost.value = formatForInput(state.essentialCost);
     dom.inputTargetSalary.value = formatForInput(state.targetSalary);
@@ -189,7 +264,219 @@
     dom.sliderCommissionRate.value = state.commissionRate;
     dom.commissionRateLabel.textContent = `${state.commissionRate.toFixed(1)}%`;
 
+    // Inputs da Tela Sobreposta (Wizard Modal)
+    if (dom.modalInputGrossIncome) {
+      dom.modalInputGrossIncome.value = formatForInput(state.grossIncome);
+      dom.modalInputEssentialCost.value = formatForInput(state.essentialCost);
+      dom.modalInputTargetSalary.value = formatForInput(state.targetSalary);
+      dom.modalInputLowMonth.value = formatForInput(state.lowMonthAverage);
+      dom.modalInputCurrentBuffer.value = formatForInput(state.currentBuffer);
+
+      dom.modalSliderTaxRate.value = state.taxAndCostRate;
+      dom.modalTaxRateLabel.textContent = `${state.taxAndCostRate}%`;
+
+      dom.modalSliderCommissionRate.value = state.commissionRate;
+      dom.modalCommissionRateLabel.textContent = `${state.commissionRate.toFixed(1)}%`;
+    }
+
     updateStrategyUI(state.strategyProfile);
+    updateStepContextPreviews();
+  };
+
+  // ==================== CONTROLE DO WIZARD MODAL (TELA SOBREPOSTA PASSO A PASSO) ====================
+  const isStepCompleted = (stepNum) => {
+    if (stepNum === 1) return state.grossIncome > 0;
+    if (stepNum === 2) return state.essentialCost > 0 || state.targetSalary > 0;
+    if (stepNum === 3) return state.lowMonthAverage > 0 || state.currentBuffer > 0;
+    if (stepNum === 4) return state.grossIncome > 0 && state.targetSalary > 0;
+    return false;
+  };
+
+  const updateStepContextPreviews = () => {
+    // Fase 1: Prévia de Renda Líquida e Imposto
+    const taxDeducted = state.grossIncome * (state.taxAndCostRate / 100);
+    const netIncome = Math.max(0, state.grossIncome - taxDeducted);
+    if (dom.step1NetPreview) dom.step1NetPreview.textContent = formatBRL(netIncome);
+    if (dom.step1TaxPreview) dom.step1TaxPreview.textContent = formatBRL(taxDeducted);
+
+    // Fase 2: Margem de Conforto entre Salário Estável e Custo Essencial
+    if (dom.step2FeedbackBox) {
+      if (state.essentialCost === 0 && state.targetSalary === 0) {
+        dom.step2FeedbackBox.className =
+          'p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3';
+        dom.step2FeedbackTitle.className = 'text-[10px] font-bold uppercase tracking-wider text-slate-500 block';
+        dom.step2MarginPreview.className = 'text-sm font-extrabold text-slate-800';
+        dom.step2MarginPreview.textContent = 'Preencha para ver sua margem';
+        dom.step2StatusBadge.className =
+          'text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700';
+        dom.step2StatusBadge.textContent = 'Aguardando';
+      } else if (state.targetSalary >= state.essentialCost && state.targetSalary > 0) {
+        const margin = state.targetSalary - state.essentialCost;
+        dom.step2FeedbackBox.className =
+          'p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 flex items-center justify-between gap-3';
+        dom.step2FeedbackTitle.className = 'text-[10px] font-bold uppercase tracking-wider text-emerald-800 block';
+        dom.step2MarginPreview.className = 'text-sm font-extrabold text-emerald-950';
+        dom.step2MarginPreview.textContent = `+${formatBRL(margin)} acima do essencial`;
+        dom.step2StatusBadge.className =
+          'text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-200 text-emerald-900';
+        dom.step2StatusBadge.textContent = 'Saudável';
+      } else {
+        const deficit = state.essentialCost - state.targetSalary;
+        dom.step2FeedbackBox.className =
+          'p-3.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3';
+        dom.step2FeedbackTitle.className = 'text-[10px] font-bold uppercase tracking-wider text-amber-800 block';
+        dom.step2MarginPreview.className = 'text-sm font-extrabold text-amber-950';
+        dom.step2MarginPreview.textContent = `Faltam ${formatBRL(deficit)} p/ cobrir o essencial`;
+        dom.step2StatusBadge.className =
+          'text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-amber-200 text-amber-900';
+        dom.step2StatusBadge.textContent = 'Atenção';
+      }
+    }
+
+    // Fase 3: Déficit Mensal em Meses Fracos e Meta de 6 Meses
+    const monthlyGap = Math.max(state.targetSalary - state.lowMonthAverage, state.essentialCost * 0.5, 0);
+    const idealBufferGoal = monthlyGap * 6;
+    if (dom.step3GapPreview) dom.step3GapPreview.textContent = `${formatBRL(monthlyGap)} / mês`;
+    if (dom.step3IdealBufferPreview) dom.step3IdealBufferPreview.textContent = formatBRL(idealBufferGoal);
+
+    // Fase 4: Resumo Compacto
+    if (dom.summaryStep1Text) {
+      dom.summaryStep1Text.textContent = `${formatBRL(state.grossIncome)} (${state.taxAndCostRate}% imp. | ${state.commissionRate}% com.)`;
+    }
+    if (dom.summaryStep2Text) {
+      dom.summaryStep2Text.textContent = `Essencial: ${formatBRL(state.essentialCost)} • Salário: ${formatBRL(state.targetSalary)}`;
+    }
+    if (dom.summaryStep3Text) {
+      dom.summaryStep3Text.textContent = `Baixa: ${formatBRL(state.lowMonthAverage)} • Colchão: ${formatBRL(state.currentBuffer)}`;
+    }
+
+    // Atualiza checks visuais nas abas do Stepper
+    dom.wizardTabBtns.forEach((btn) => {
+      const stepNum = parseInt(btn.getAttribute('data-goto-step'), 10);
+      const checkEl = btn.querySelector('.step-check');
+      if (checkEl) {
+        if (isStepCompleted(stepNum)) {
+          checkEl.classList.remove('hidden');
+        } else {
+          checkEl.classList.add('hidden');
+        }
+      }
+    });
+  };
+
+  const renderWizardUI = (shouldFocus = false) => {
+    if (!dom.wizardStepCounterBadge) return;
+
+    const meta = stepMeta[currentStep] || stepMeta[1];
+    dom.wizardStepCounterBadge.textContent = `Fase ${currentStep} de ${TOTAL_STEPS}`;
+    dom.wizardStepShortLabel.textContent = meta.shortLabel;
+    dom.wizardProgressBar.style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
+
+    // Atualiza aparência das 4 abas do Stepper
+    dom.wizardTabBtns.forEach((btn) => {
+      const stepNum = parseInt(btn.getAttribute('data-goto-step'), 10);
+      const numBadge = btn.querySelector('.step-num');
+      const labelSpan = btn.querySelector('span:last-child');
+      const completed = isStepCompleted(stepNum);
+
+      if (stepNum === currentStep) {
+        btn.className =
+          'wizard-tab-btn group flex flex-col items-start p-2 rounded-xl border border-emerald-400 bg-emerald-50/80 text-left transition-all shadow-2xs cursor-pointer';
+        if (numBadge) {
+          numBadge.className =
+            'step-num w-5 h-5 rounded-full bg-emerald-400 text-emerald-950 text-[10px] font-extrabold flex items-center justify-center';
+        }
+        if (labelSpan) {
+          labelSpan.className = 'text-[11px] font-bold text-slate-900 truncate w-full';
+        }
+      } else if (completed) {
+        btn.className =
+          'wizard-tab-btn group flex flex-col items-start p-2 rounded-xl border border-emerald-200/80 bg-emerald-50/30 hover:bg-emerald-50/60 text-left transition-all cursor-pointer';
+        if (numBadge) {
+          numBadge.className =
+            'step-num w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold flex items-center justify-center';
+        }
+        if (labelSpan) {
+          labelSpan.className = 'text-[11px] font-semibold text-emerald-950 truncate w-full';
+        }
+      } else {
+        btn.className =
+          'wizard-tab-btn group flex flex-col items-start p-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-left transition-all cursor-pointer';
+        if (numBadge) {
+          numBadge.className =
+            'step-num w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[10px] font-bold flex items-center justify-center';
+        }
+        if (labelSpan) {
+          labelSpan.className = 'text-[11px] font-medium text-slate-600 truncate w-full';
+        }
+      }
+    });
+
+    // Exibe apenas o painel da fase atual
+    dom.wizardStepPanels.forEach((panel) => {
+      const panelStep = parseInt(panel.getAttribute('data-step-panel'), 10);
+      if (panelStep === currentStep) {
+        panel.classList.remove('hidden');
+      } else {
+        panel.classList.add('hidden');
+      }
+    });
+
+    // Botões Fase Anterior e Próxima Fase / Finalizar
+    dom.btnPrevStep.disabled = currentStep === 1;
+    if (currentStep < TOTAL_STEPS) {
+      dom.btnNextStepText.textContent = `Avançar para Fase ${currentStep + 1}`;
+      dom.btnNextStepIcon.innerHTML =
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />';
+    } else {
+      dom.btnNextStepText.textContent = 'Finalizar e Ver Diagnóstico';
+      dom.btnNextStepIcon.innerHTML =
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />';
+    }
+
+    if (shouldFocus && meta.focusId) {
+      const targetInput = document.getElementById(meta.focusId);
+      if (targetInput) {
+        setTimeout(() => targetInput.focus(), 50);
+      }
+    }
+  };
+
+  const goToStep = (stepNumber, shouldFocus = true) => {
+    const clamped = Math.max(1, Math.min(TOTAL_STEPS, stepNumber));
+    currentStep = clamped;
+    updateStepContextPreviews();
+    renderWizardUI(shouldFocus);
+  };
+
+  const openWizardModal = (startStep = 1) => {
+    if (!dom.simulatorWizardModal) return;
+    syncInputsFromState();
+    currentStep = startStep;
+    renderWizardUI(true);
+    dom.simulatorWizardModal.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  };
+
+  const closeWizardModal = (scrollToResult = false) => {
+    if (!dom.simulatorWizardModal) return;
+    dom.simulatorWizardModal.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+    syncInputsFromState();
+    calculateFinancials();
+
+    if (scrollToResult) {
+      const calcSection = document.getElementById('calculadora');
+      if (calcSection) {
+        calcSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (dom.statusBanner) {
+        dom.statusBanner.classList.add('diag-highlight');
+        setTimeout(() => {
+          dom.statusBanner.classList.remove('diag-highlight');
+        }, 1800);
+      }
+    }
   };
 
   // ==================== CONTROLE DO SELETOR DE ESTRATÉGIA ====================
@@ -214,32 +501,174 @@
       const isSelected = btn.getAttribute('data-strategy') === activeStrategy;
       if (isSelected) {
         btn.className =
-          'strategy-btn py-2 px-1 text-center rounded-lg transition-all bg-white text-emerald-950 font-bold shadow-xs border border-slate-200';
+          'strategy-btn py-2.5 px-1 text-center rounded-lg transition-all bg-white text-emerald-950 font-bold shadow-xs border border-slate-200 cursor-pointer';
       } else {
         btn.className =
-          'strategy-btn py-2 px-1 text-center rounded-lg transition-all text-slate-600 hover:text-slate-900 font-medium';
+          'strategy-btn py-2.5 px-1 text-center rounded-lg transition-all text-slate-600 hover:text-slate-900 font-medium cursor-pointer';
       }
     });
 
     const info = strategyDescriptions[activeStrategy] || strategyDescriptions.balanced;
-    dom.strategyBadgeText.textContent = info.badge;
-    dom.strategyDesc.textContent = info.desc;
+    if (dom.strategyBadgeText) dom.strategyBadgeText.textContent = info.badge;
+    if (dom.strategyDesc) dom.strategyDesc.textContent = info.desc;
+    if (dom.modalStrategyBadgeText) dom.modalStrategyBadgeText.textContent = info.badge;
+    if (dom.modalStrategyDesc) dom.modalStrategyDesc.textContent = info.desc;
+  };
+
+  // ==================== CÁLCULO LOCAL DE FALLBACK (OFFLINE / FILE://) ====================
+  const computeLocalCalculation = (inputState) => {
+    const numGross = Math.max(0, parseFloat(inputState.grossIncome) || 0);
+    const numTaxRate = Math.min(35, Math.max(0, parseFloat(inputState.taxAndCostRate) || 0));
+    const numEssential = Math.max(0, parseFloat(inputState.essentialCost) || 0);
+    const numTarget = Math.max(0, parseFloat(inputState.targetSalary) || 0);
+    const numLowMonth = Math.max(0, parseFloat(inputState.lowMonthAverage) || 0);
+    const numCurrentBuffer = Math.max(0, parseFloat(inputState.currentBuffer) || 0);
+    const numCommissionRate = Math.max(0, parseFloat(inputState.commissionRate) || 0);
+    const strategy = ['shield', 'balanced', 'wealth'].includes(inputState.strategyProfile)
+      ? inputState.strategyProfile
+      : 'balanced';
+
+    const taxDeducted = numGross * (numTaxRate / 100);
+    const netIncome = Math.max(0, numGross - taxDeducted);
+
+    let status = 'surplus';
+    let statusLabel = '';
+    let statusDescription = '';
+    let surplus = 0;
+    let bufferAllocation = 0;
+    let rewardBonus = 0;
+    let wealthBonus = 0;
+    let bufferWithdrawal = 0;
+    const guaranteedSalary = numTarget;
+
+    const strategyRates = {
+      shield: { buffer: 0.75, reward: 0.10, wealth: 0.15 },
+      balanced: { buffer: 0.60, reward: 0.15, wealth: 0.25 },
+      wealth: { buffer: 0.40, reward: 0.20, wealth: 0.40 }
+    };
+    const currentRates = strategyRates[strategy];
+
+    if (netIncome > numTarget) {
+      status = 'surplus';
+      statusLabel = 'Mês de Alta: Excedente Gerado';
+      statusDescription =
+        'Sua renda líquida superou o Salário Estável. O excedente foi particionado para blindar seu futuro, garantir lazer sem culpa e acelerar seu patrimônio.';
+      surplus = netIncome - numTarget;
+      bufferAllocation = surplus * currentRates.buffer;
+      rewardBonus = surplus * currentRates.reward;
+      wealthBonus = surplus * currentRates.wealth;
+      bufferWithdrawal = 0;
+    } else if (netIncome >= numEssential) {
+      status = 'drawdown';
+      statusLabel = 'Mês Abaixo da Meta: Ativação do Colchão';
+      statusDescription =
+        'Sua renda deste mês ficou abaixo da sua meta mensal. Resgate a complementação indicada do seu Colchão de Sazonalidade para manter o seu padrão de vida estável.';
+      bufferWithdrawal = Math.max(0, numTarget - netIncome);
+    } else {
+      status = 'critical';
+      statusLabel = 'Alerta de Mês Fraco: Modo Contenção';
+      statusDescription =
+        'A receita líquida não cobriu o custo de sobrevivência essencial. Acione a retirada de socorro do Colchão para cobrir as contas básicas e restrinja gastos supérfluos.';
+      bufferWithdrawal = Math.max(0, numTarget - netIncome);
+    }
+
+    const newBufferTotal = Math.max(0, numCurrentBuffer + bufferAllocation - bufferWithdrawal);
+    const monthlyGap = Math.max(numTarget - numLowMonth, numEssential * 0.5, 1);
+    const idealBufferGoal = monthlyGap * 6;
+    const shieldProgress =
+      idealBufferGoal > 0 ? Math.min(100, Math.round((newBufferTotal / idealBufferGoal) * 100)) : 100;
+
+    const monthsSurvivingLow =
+      monthlyGap > 0 ? Math.floor((newBufferTotal / monthlyGap) * 10) / 10 : 0;
+    const monthsZeroSales = numEssential > 0 ? parseFloat((newBufferTotal / numEssential).toFixed(1)) : 0;
+
+    const taxFactor = 1 - numTaxRate / 100;
+    const neededGrossIncome = taxFactor > 0 ? numTarget / taxFactor : 0;
+    const salesVolumeNeeded =
+      numCommissionRate > 0 ? neededGrossIncome / (numCommissionRate / 100) : 0;
+
+    const totalRepresented = Math.max(numGross, 1);
+    const allocationBreakdown = {
+      tax: {
+        value: taxDeducted,
+        percentage: Number(((taxDeducted / totalRepresented) * 100).toFixed(1)),
+        label: 'Impostos & Custos'
+      },
+      salary: {
+        value: Math.min(netIncome, numTarget),
+        percentage: Number(((Math.min(netIncome, numTarget) / totalRepresented) * 100).toFixed(1)),
+        label: 'Salário Estável (Conta PF)'
+      },
+      buffer: {
+        value: bufferAllocation,
+        percentage: Number(((bufferAllocation / totalRepresented) * 100).toFixed(1)),
+        label: 'Colchão de Sazonalidade'
+      },
+      reward: {
+        value: rewardBonus,
+        percentage: Number(((rewardBonus / totalRepresented) * 100).toFixed(1)),
+        label: 'Lazer Livre (Sem Culpa)'
+      },
+      wealth: {
+        value: wealthBonus,
+        percentage: Number(((wealthBonus / totalRepresented) * 100).toFixed(1)),
+        label: 'Patrimônio / 13º'
+      }
+    };
+
+    return {
+      inputs: {
+        grossIncome: numGross,
+        taxAndCostRate: numTaxRate,
+        essentialCost: numEssential,
+        targetSalary: numTarget,
+        lowMonthAverage: numLowMonth,
+        currentBuffer: numCurrentBuffer,
+        commissionRate: numCommissionRate,
+        strategyProfile: strategy
+      },
+      financials: {
+        taxDeducted,
+        netIncome,
+        guaranteedSalary,
+        surplus,
+        bufferAllocation,
+        bufferWithdrawal,
+        rewardBonus,
+        wealthBonus,
+        newBufferTotal,
+        monthlyGap,
+        idealBufferGoal,
+        shieldProgress,
+        monthsSurvivingLow,
+        monthsZeroSales,
+        neededGrossIncome,
+        salesVolumeNeeded
+      },
+      status: {
+        code: status,
+        label: statusLabel,
+        description: statusDescription,
+        rates: currentRates
+      },
+      allocationBreakdown
+    };
   };
 
   // ==================== INTEGRAÇÃO COM BACKEND (API /api/calculate) ====================
   const calculateFinancials = async () => {
+    updateStepContextPreviews();
+    saveStateToStorage();
+
+    // Se ainda não foram preenchidos valores chave, exibe o estado de espera elegante
+    const hasInputs = state.grossIncome > 0 || state.targetSalary > 0 || state.essentialCost > 0;
+    if (!hasInputs) {
+      currentCalculationData = null;
+      renderAwaitingState();
+      return;
+    }
+
     try {
-      syncStateFromInputs();
-      saveStateToStorage();
-
-      // Se ainda não foram preenchidos valores chave, exibe o estado de espera elegante
-      const hasInputs = state.grossIncome > 0 || state.targetSalary > 0 || state.essentialCost > 0;
-      if (!hasInputs) {
-        currentCalculationData = null;
-        renderAwaitingState();
-        return;
-      }
-
       const response = await fetch('/api/calculate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -254,9 +683,13 @@
       if (json.success && json.data) {
         currentCalculationData = json.data;
         renderDashboard(json.data);
+        return;
       }
     } catch (err) {
-      console.error('Falha ao processar cálculo financeiro:', err);
+      // Fallback local imediato caso o HTML seja aberto diretamente sem o servidor Node
+      const localData = computeLocalCalculation(state);
+      currentCalculationData = localData;
+      renderDashboard(localData);
     }
   };
 
@@ -511,6 +944,112 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
   };
 
   // ==================== ARTIGOS EDUCATIVOS E MODAL ====================
+  const FALLBACK_ARTICLES = [
+    {
+      id: 'armadilha-do-mes-recorde',
+      title: 'A Armadilha do Mês Recorde: Por que seu melhor mês pode iniciar sua falência',
+      category: 'Comportamento Financeiro',
+      readTime: '4 min de leitura',
+      summary:
+        'Quando entra uma bolada de comissão, a euforia costuma elevar o padrão de vida de forma permanente. Entenda como blindar suas finanças contra a ressaca dos meses seguintes.',
+      badge: 'Essencial',
+      sections: [
+        {
+          heading: 'A ilusão do novo patamar de renda',
+          paragraphs: [
+            'Todo profissional que vive de comissão já experimentou aquele mês mágico: três ou quatro grandes negócios fechados na mesma semana, uma premiação extraordinária e um extrato bancário com múltiplos dígitos que parecem nunca mais ter fim.',
+            "O perigo mora exatamente na reação psicológica imediata a essa vitória: nosso cérebro subconscientemente normaliza o resultado atípico como o 'novo padrão'. É o gatilho para financiar um carro mais caro, matricular os filhos em uma escola cujo boleto exige um desempenho sobre-humano todo mês ou aumentar o limite do cartão de crédito."
+          ]
+        },
+        {
+          heading: 'Como blindar seu patrimônio na prática',
+          tips: [
+            'Regra de Ouro do Mês Recorde: O excedente financeiro pertence ao seu futuro e ao seu colchão de segurança, não à concessionária de veículos.',
+            'Congele o Custo de Vida Essencial: Seu custo fixo (moradia, alimentação básica, saúde) nunca deve ultrapassar a média líquida dos seus 3 piores meses do ano.',
+            'Crie uma recompensa com teto fixo: Destine de 10% a 15% do excedente para comemoração imediata e prazer sem culpa. O restante vai para o Colchão de Sazonalidade.'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'conceito-salario-sintetico',
+      title: 'O Conceito de Salário Sintético: Como criar um contracheque fixo sendo 100% variável',
+      category: 'Engenharia de Renda',
+      readTime: '5 min de leitura',
+      summary:
+        'Descubra o método dos dois bolsos: como criar uma barreira entre o fluxo caótico de comissões e sua conta corrente pessoal para ter previsibilidade absoluta.',
+      badge: 'Metodologia',
+      sections: [
+        {
+          heading: 'A estrutura dos dois bolsos (PJ e PF)',
+          paragraphs: [
+            "O método do Salário Sintético baseia-se em dissociar a velocidade da sua produção comercial do seu consumo pessoal. Você atuará como o 'patrão' de si mesmo através de dois compartimentos distintos:",
+            '1. Conta Represadora (Bolso Empresarial / Colchão): Onde caem todas as comissões brutas, de onde saem os impostos e onde fica retido o excedente dos meses fortes.',
+            '2. Conta de Consumo Pessoal (PF): Onde você recebe apenas e exclusivamente o seu Salário Estável pré-definido, sempre no mesmo dia do mês.'
+          ]
+        },
+        {
+          heading: 'Passo a passo para definir seu Salário Estável',
+          tips: [
+            'Mapeie seu Custo Essencial Fixo: Aluguel/Financiamento, contas de consumo, supermercado e convênio médico.',
+            'Adicione uma margem de conforto sustentável: Defina um salário que garanta qualidade de vida sem exageros.',
+            'Programe a transferência automática: Todo dia 5, transfira exatamente o valor do Salário Estável da sua conta reserva para a sua conta pessoal.'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'onde-guardar-colchao-sazonalidade',
+      title: 'Onde guardar o Colchão de Sazonalidade: Liquidez Diária vs. Rentabilidade',
+      category: 'Investimentos',
+      readTime: '4 min de leitura',
+      summary:
+        'O Colchão de Sazonalidade não serve para deixá-lo milionário, mas sim para impedir que você fique pobre. Saiba escolher os ativos certos com segurança e liquidez imediata.',
+      badge: 'Estratégia',
+      sections: [
+        {
+          heading: 'A função biológica do seu colchão financeiro',
+          paragraphs: [
+            'A missão principal dessa reserva NÃO é enriquecimento por valorização, mas sim disponibilidade instantânea sem perda de principal. Se você precisar do dinheiro em uma terça-feira para cobrir a retirada do mês, o capital deve estar integral e acessível.'
+          ]
+        },
+        {
+          heading: 'Melhores opções disponíveis no mercado brasileiro',
+          tips: [
+            'Tesouro Selic: A opção mais segura do país, garantida pelo Governo Federal, com liquidez diária.',
+            'CDB de Liquidez Diária (100% a 102% do CDI): Disponível em bancos sólidos, com cobertura do FGC.',
+            'Evite a todo custo: Fundos com carência de 30 dias (D+30), LCIs/LCAs travadas por meses ou renda variável.'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'separar-imposto-no-mesmo-minuto',
+      title: 'PJ, MEI ou Autônomo: Como separar o dinheiro do imposto no mesmo minuto em que a comissão cai',
+      category: 'Tributação & Gestão',
+      readTime: '4 min de leitura',
+      summary:
+        'O leão da Receita não negocia. Aprenda a rotina blindada de provisionamento fiscal para nunca mais ser pego de surpresa pelo DAS ou Carnê-Leão.',
+      badge: 'Gestão Fiscal',
+      sections: [
+        {
+          heading: 'O dinheiro que entra na sua conta não é todo seu',
+          paragraphs: [
+            'Uma das maiores causas de endividamento entre corretores de imóveis, representantes comerciais e autônomos é a mistura entre a receita bruta da comissão e o lucro líquido real.'
+          ]
+        },
+        {
+          heading: 'O protocolo do provisionamento imediato',
+          tips: [
+            'Identifique sua alíquota efetiva real: Consulte seu contador e descubra exatamente o percentual médio dos seus impostos.',
+            "Abra uma subconta de custódia tributária: Mantenha um 'cofrinho' ou conta separada exclusivamente denominada 'Reserva Fiscal'.",
+            'Ação no mesmo minuto: Transfira imediatamente o percentual do imposto para a conta de reserva fiscal assim que o PIX/TED cair.'
+          ]
+        }
+      ]
+    }
+  ];
+
   const loadArticles = async () => {
     try {
       const response = await fetch('/api/articles');
@@ -519,14 +1058,12 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
       if (json.success && json.data) {
         articlesData = json.data;
         renderArticlesList(articlesData);
+        return;
       }
     } catch (err) {
-      console.error('Erro ao buscar artigos:', err);
-      dom.articlesGrid.innerHTML = `
-        <div class="col-span-2 p-6 text-center text-sm text-slate-500 bg-slate-50 rounded-2xl border border-slate-200">
-          Não foi possível carregar os artigos educativos no momento. Verifique se o servidor está ativo.
-        </div>
-      `;
+      // Usa artigos embutidos caso seja aberto direto via arquivo local (file://)
+      articlesData = FALLBACK_ARTICLES;
+      renderArticlesList(articlesData);
     }
   };
 
@@ -626,13 +1163,14 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
   const applyPreset = (presetValues) => {
     state = { ...state, ...presetValues };
     syncInputsFromState();
+    renderWizardUI(false);
     calculateFinancials();
   };
 
   // ==================== BINDING DE EVENTOS ====================
   const setupEventListeners = () => {
-    // Inputs monetários - formatar amigavelmente no blur e calcular no input
-    const currencyInputs = [
+    // 1. Inputs monetários da página principal
+    const mainCurrencyInputs = [
       dom.inputGrossIncome,
       dom.inputEssentialCost,
       dom.inputTargetSalary,
@@ -640,35 +1178,190 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
       dom.inputCurrentBuffer
     ];
 
-    currencyInputs.forEach((input) => {
+    mainCurrencyInputs.forEach((input) => {
+      if (!input) return;
       input.addEventListener('input', () => {
+        syncStateFromMainInputs();
         debouncedCalculate();
       });
 
       input.addEventListener('blur', () => {
-        const parsed = parseCurrencyInput(input.value);
-        input.value = formatForInput(parsed);
+        syncStateFromMainInputs();
+        syncInputsFromState();
         debouncedCalculate();
       });
 
-      // Seleciona tudo ao focar para facilitar edição
       input.addEventListener('focus', () => {
         input.select();
       });
     });
 
-    // Sliders
+    // 2. Inputs monetários da Tela Sobreposta (Wizard Modal)
+    const modalCurrencyInputs = [
+      dom.modalInputGrossIncome,
+      dom.modalInputEssentialCost,
+      dom.modalInputTargetSalary,
+      dom.modalInputLowMonth,
+      dom.modalInputCurrentBuffer
+    ];
+
+    modalCurrencyInputs.forEach((input) => {
+      if (!input) return;
+      input.addEventListener('input', () => {
+        syncStateFromModalInputs();
+        // Atualiza também os inputs da página principal ao fundo
+        dom.inputGrossIncome.value = formatForInput(state.grossIncome);
+        dom.inputEssentialCost.value = formatForInput(state.essentialCost);
+        dom.inputTargetSalary.value = formatForInput(state.targetSalary);
+        dom.inputLowMonth.value = formatForInput(state.lowMonthAverage);
+        dom.inputCurrentBuffer.value = formatForInput(state.currentBuffer);
+        debouncedCalculate();
+      });
+
+      input.addEventListener('blur', () => {
+        syncStateFromModalInputs();
+        syncInputsFromState();
+        debouncedCalculate();
+      });
+
+      input.addEventListener('focus', () => {
+        input.select();
+      });
+
+      // Tecla Enter avança de campo ou de fase na Tela Sobreposta
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          syncStateFromModalInputs();
+          syncInputsFromState();
+          calculateFinancials();
+
+          if (input === dom.modalInputEssentialCost) {
+            dom.modalInputTargetSalary.focus();
+          } else if (input === dom.modalInputLowMonth) {
+            dom.modalInputCurrentBuffer.focus();
+          } else if (currentStep < TOTAL_STEPS) {
+            goToStep(currentStep + 1, true);
+          } else {
+            closeWizardModal(true);
+          }
+        }
+      });
+    });
+
+    // 3. Botões de Abrir e Fechar a Tela Sobreposta (Simulador Passo a Passo)
+    if (dom.btnHeroSimulate) {
+      dom.btnHeroSimulate.addEventListener('click', () => openWizardModal(1));
+    }
+    if (dom.btnOpenWizardHeader) {
+      dom.btnOpenWizardHeader.addEventListener('click', () => openWizardModal(1));
+    }
+    if (dom.btnOpenWizardCard) {
+      dom.btnOpenWizardCard.addEventListener('click', () => openWizardModal(1));
+    }
+    if (dom.wizardModalCloseBtn) {
+      dom.wizardModalCloseBtn.addEventListener('click', () => closeWizardModal(false));
+    }
+    if (dom.wizardModalBackdrop) {
+      dom.wizardModalBackdrop.addEventListener('click', () => closeWizardModal(false));
+    }
+
+    // 4. Botões de Soma Rápida (+ R$ 1.000, + R$ 5.000, etc.) na Tela Sobreposta
+    document.querySelectorAll('.quick-add-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const raw = btn.getAttribute('data-quick-add') || '';
+        const [fieldKey, amountStr] = raw.split(':');
+        const addAmount = parseFloat(amountStr) || 0;
+        if (fieldKey && Object.prototype.hasOwnProperty.call(state, fieldKey) && addAmount > 0) {
+          state[fieldKey] = (Number(state[fieldKey]) || 0) + addAmount;
+          syncInputsFromState();
+          calculateFinancials();
+        }
+      });
+    });
+
+    // 5. Botão Sugerir Salário Estável (+40% sobre Custo Essencial)
+    if (dom.btnSuggestTargetSalary) {
+      dom.btnSuggestTargetSalary.addEventListener('click', () => {
+        const essential = state.essentialCost > 0 ? state.essentialCost : 4000;
+        state.essentialCost = essential;
+        state.targetSalary = Math.round((essential * 1.4) / 100) * 100;
+        syncInputsFromState();
+        calculateFinancials();
+      });
+    }
+
+    // 6. Navegação das Fases da Tela Sobreposta (Stepper + Botões Editar + Anterior/Próximo)
+    document.querySelectorAll('[data-goto-step]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetStep = parseInt(btn.getAttribute('data-goto-step'), 10);
+        if (targetStep) {
+          goToStep(targetStep, true);
+        }
+      });
+    });
+
+    if (dom.btnPrevStep) {
+      dom.btnPrevStep.addEventListener('click', () => {
+        if (currentStep > 1) {
+          goToStep(currentStep - 1, true);
+        }
+      });
+    }
+
+    if (dom.btnNextStep) {
+      dom.btnNextStep.addEventListener('click', () => {
+        if (currentStep < TOTAL_STEPS) {
+          goToStep(currentStep + 1, true);
+        } else {
+          // Finaliza a simulação, fecha a tela sobreposta e rola para o diagnóstico completo
+          closeWizardModal(true);
+        }
+      });
+    }
+
+    // 7. Sliders (Página Principal + Tela Sobreposta Sincronizados)
     dom.sliderTaxRate.addEventListener('input', (e) => {
-      dom.taxRateLabel.textContent = `${e.target.value}%`;
+      state.taxAndCostRate = parseFloat(e.target.value) || 0;
+      dom.taxRateLabel.textContent = `${state.taxAndCostRate}%`;
+      if (dom.modalSliderTaxRate) {
+        dom.modalSliderTaxRate.value = state.taxAndCostRate;
+        dom.modalTaxRateLabel.textContent = `${state.taxAndCostRate}%`;
+      }
       debouncedCalculate();
     });
+
+    if (dom.modalSliderTaxRate) {
+      dom.modalSliderTaxRate.addEventListener('input', (e) => {
+        state.taxAndCostRate = parseFloat(e.target.value) || 0;
+        dom.modalTaxRateLabel.textContent = `${state.taxAndCostRate}%`;
+        dom.sliderTaxRate.value = state.taxAndCostRate;
+        dom.taxRateLabel.textContent = `${state.taxAndCostRate}%`;
+        debouncedCalculate();
+      });
+    }
 
     dom.sliderCommissionRate.addEventListener('input', (e) => {
-      dom.commissionRateLabel.textContent = `${parseFloat(e.target.value).toFixed(1)}%`;
+      state.commissionRate = parseFloat(e.target.value) || 0;
+      dom.commissionRateLabel.textContent = `${state.commissionRate.toFixed(1)}%`;
+      if (dom.modalSliderCommissionRate) {
+        dom.modalSliderCommissionRate.value = state.commissionRate;
+        dom.modalCommissionRateLabel.textContent = `${state.commissionRate.toFixed(1)}%`;
+      }
       debouncedCalculate();
     });
 
-    // Botões de Estratégia
+    if (dom.modalSliderCommissionRate) {
+      dom.modalSliderCommissionRate.addEventListener('input', (e) => {
+        state.commissionRate = parseFloat(e.target.value) || 0;
+        dom.modalCommissionRateLabel.textContent = `${state.commissionRate.toFixed(1)}%`;
+        dom.sliderCommissionRate.value = state.commissionRate;
+        dom.commissionRateLabel.textContent = `${state.commissionRate.toFixed(1)}%`;
+        debouncedCalculate();
+      });
+    }
+
+    // 8. Botões de Estratégia
     dom.strategyBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
         const strategy = btn.getAttribute('data-strategy');
@@ -677,7 +1370,7 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
       });
     });
 
-    // Presets
+    // 9. Presets
     dom.btnPresetRecord.addEventListener('click', () => {
       applyPreset({
         grossIncome: 26000,
@@ -711,21 +1404,27 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
           localStorage.removeItem(STORAGE_KEY);
         } catch (e) {}
         syncInputsFromState();
+        goToStep(1, false);
         renderAwaitingState();
       }
     });
 
-    // Exportação WhatsApp
+    // 10. Exportação WhatsApp
     dom.btnExportWhatsApp.addEventListener('click', exportToWhatsApp);
 
-    // Modal
+    // 11. Modal de Artigos + Fechamento por Escape
     dom.modalCloseBtn.addEventListener('click', closeArticleModal);
     dom.modalFooterCloseBtn.addEventListener('click', closeArticleModal);
     dom.modalBackdrop.addEventListener('click', closeArticleModal);
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !dom.articleModal.classList.contains('hidden')) {
-        closeArticleModal();
+      if (e.key === 'Escape') {
+        if (dom.simulatorWizardModal && !dom.simulatorWizardModal.classList.contains('hidden')) {
+          closeWizardModal(false);
+        }
+        if (dom.articleModal && !dom.articleModal.classList.contains('hidden')) {
+          closeArticleModal();
+        }
       }
     });
   };
@@ -734,6 +1433,7 @@ _Gerado pelo ComissãoEstável - Nivelamento de Renda Inteligente_`;
   const init = () => {
     loadStoredState();
     syncInputsFromState();
+    renderWizardUI(false);
     setupEventListeners();
     calculateFinancials();
     loadArticles();
